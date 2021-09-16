@@ -102,6 +102,11 @@ block Middle
 						td 서버
 					tbody#gamsi-data
 	fieldset
+		legend IP 조회
+		div
+			textarea#iplist(rows=20, cols=100, placeholder="IP 정보", readonly)
+			button#iplistok 조회 
+	fieldset
 		legend 끄투 DB 다루기
 		div
 			input#db-word(placeholder='단어')

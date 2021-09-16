@@ -19,7 +19,6 @@
 (function(){
 	var WIDTH = { 'y': 50, 't': 50, 'g': 100, 'l': 200, 'm': 600 };
 	var $temp = {};
-	
 	$(document).ready(function(){
 	// 끄투 DB에 단어 추가하기
 		$("#db-ok").on('click', function(e){
@@ -222,7 +221,17 @@
 				alert(res);
 			});
 		});
-	
+	$("#iplistok").on('click', function(e){
+		$.get("/gwalli/ip?pw=" + $("#db-password").val(), function(data){
+			console.log(data.data);
+			console.log(data);
+			if (!data) return JLog.error("no ip data");
+			$("#iplist").val(data);
+		 }),
+		 $.post("/gwalli/ip", {
+			pw: $("#db-password").val()
+		})
+	});
 	// 유저 감시하기
 		$("#gamsi-go").on('click', function(e){
 			clearInterval($temp._gamsi);

@@ -16,5 +16,9 @@
     "electron": "^1.4.15",
     "electron-packager": "^8.5.1",
     "electron-pug": "^1.5.1"
+  },
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "moment": "^2.29.1"
   }
 }

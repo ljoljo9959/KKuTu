@@ -18,6 +18,7 @@
 
 var Cluster = require("cluster");
 var File = require('fs');
+var moment = require("moment");
 var WebSocket = require('ws');
 var https = require('https');
 var HTTPS_Server;
@@ -496,6 +497,9 @@ function joinNewUser($c) {
 	KKuTu.publish('conn', {user: $c.getData()});
 
 	JLog.info("New user #" + $c.id);
+
+	const thisDate = moment().format("MM-DD|HH:mm");
+	File.appendFileSync("../Log/ip.log", `\nJoin: {${thisDate}}| [${$c.id}] | (${$c.remoteAddress.slice(7)})`, 'utf-8');
 }
 
 KKuTu.onClientMessage = function ($c, msg) {
@@ -579,7 +583,7 @@ function processClientRequest($c, msg) {
 			} else {
 				$c.sendError(450);
 			}
-			break;
+			break;x
 		case 'friendAddRes':
 			if (!(temp = DIC[msg.from])) return;
 			if (temp._friend != $c.id) return;
@@ -681,6 +685,7 @@ KKuTu.onClientClosed = function($c, code){
 	if($c.socket) $c.socket.removeAllListeners();
 	if($c.friends) narrateFriends($c.id, $c.friends, "off");
 	KKuTu.publish('disconn', { id: $c.id });
-
+	const thisDate = moment().format("MM-DD|HH:mm");
 	JLog.alert("Exit #" + $c.id);
+	File.appendFileSync("../Log/ip.log", `\nExit: {${thisDate}}| [${$c.id}] | (${$c.remoteAddress.slice(7)})`, 'utf-8');
 };

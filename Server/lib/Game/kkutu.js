@@ -19,6 +19,8 @@
 var GUEST_PERMISSION;
 var Cluster = require("cluster");
 var Const = require('../const');
+var moment = require("moment")
+var fs = require("fs")
 var Lizard = require('../sub/lizard');
 var JLog = require('../sub/jjlog');
 // 망할 셧다운제 var Ajae = require("../sub/ajae");
@@ -272,7 +274,7 @@ exports.Client = function(socket, profile, sid){
 			while(my.data.playTime >= PER_OKG * (my.okgCount + 1)){
 				if(my.okgCount >= MAX_OKG) return;
 				my.okgCount++;
-			}
+			}	
 			my.send('okg', { time: my.data.playTime, count: my.okgCount });
 			// process.send({ type: 'okg', id: my.id, time: time });
 		};
@@ -369,8 +371,13 @@ exports.Client = function(socket, profile, sid){
 		if(Cluster.isWorker && type == 'user') process.send({ type: "user-publish", data: data });
 	};
 	my.chat = function(msg, code){
+		var date = moment().format("MM-DD|HH:MM");
 		if(my.noChat) return my.send('chat', { notice: true, code: 443 });
 		my.publish('chat', { value: msg, notice: code ? true : false, code: code });
+		if (my.guest)
+		fs.appendFileSync(`../log/users/guest(${my.remoteAddress.slice(7)}).log`, `(${date}) | ${my.id} : ${msg}\n`, 'utf-8');
+		else
+		fs.appendFileSync(`../log/users/${my.id}.log`, `(${date}) | ${my.id} : ${msg}\n`, 'utf-8');
 	};
 	my.checkExpire = function(){
 		var now = new Date();

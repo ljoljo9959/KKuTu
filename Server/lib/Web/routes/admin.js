@@ -21,13 +21,14 @@ var MainDB	 = require("../db");
 var GLOBAL	 = require("../../sub/global.json");
 var JLog	 = require("../../sub/jjlog");
 var Lizard	 = require("../../sub/lizard.js");
+var fs = require("fs");
 
 exports.run = function(Server, page){
 
 Server.get("/gwalli", function(req, res){
 	if(!checkAdmin(req, res)) return;
 	
-	req.session.admin = true;
+	req.session.admin = true
 	page(req, res, "gwalli");
 });
 Server.get("/gwalli/injeong", function(req, res){
@@ -194,6 +195,21 @@ function onKKuTuDB(req, res){
 	});
 	if(!req.body.nof) res.sendStatus(200);
 }
+Server.get("/gwalli/ip", function(req, res){
+	var i = fs.readFileSync("../log/ip.log", "utf8")
+	if (!checkAdmin(req, res)) return;
+	
+	res.send(i);
+});
+Server.post("/gwalli/ip", function(req, res){
+	if (!checkAdmin(req, res)) return;
+	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
+	var i = fs.readFileSync("../log/ip.log", "utf8")
+	if (!checkAdmin(req, res)) return;
+	
+	res.send(i);
+
+});
 Server.post("/gwalli/kkutudb/:word", function(req, res){
 	if(!checkAdmin(req, res)) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
