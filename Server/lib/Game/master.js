@@ -27,6 +27,7 @@ var KKuTu = require('./kkutu');
 var GLOBAL = require("../sub/global.json");
 var Const = require("../const");
 var JLog = require('../sub/jjlog');
+var Bot = require('./bot')
 var Secure = require('../sub/secure');
 var Recaptcha = require('../sub/recaptcha');
 
@@ -70,7 +71,7 @@ process.on('uncaughtException', function(err){
 		console.log(text);
 	});
 });
-function processAdmin(id, value){
+function processAdmin(id, value, name){
 	var cmd, temp, i, j;
 	
 	value = value.replace(/^(#\w+\s+)?(.+)/, function(v, p1, p2){
@@ -80,6 +81,7 @@ function processAdmin(id, value){
 	switch(cmd){
 		case "yell":
 			KKuTu.publish('yell', { value: value });
+			Bot.notice(value,id,name)
 			return null;
 		case "kill":
 			if(temp = DIC[value]){
@@ -223,7 +225,7 @@ Cluster.on('message', function(worker, msg){
 	
 	switch(msg.type){
 		case "admin":
-			if(DIC[msg.id] && DIC[msg.id].admin) processAdmin(msg.id, msg.value);
+			if(DIC[msg.id] && DIC[msg.id].admin) processAdmin(msg.id, msg.value, msg.name);
 			break;
 		case "tail-report":
 			if(temp = T_ROOM[msg.place]){
@@ -373,7 +375,7 @@ exports.init = function(_SID, CHAN){
 			}
 			MainDB.session.findOne([ '_id', key ]).limit([ 'profile', true ]).on(function($body){
 				$c = new KKuTu.Client(socket, $body ? $body.profile : null, key);
-				$c.admin = GLOBAL.ADMIN.indexOf($c.id) != -1;
+				$c.admin = GLOBAL.ADMIN.user.indexOf($c.id) != -1;
 				/* Enhanced User Block System [S] */
 				$c.remoteAddress = GLOBAL.USER_BLOCK_OPTIONS.USE_X_FORWARDED_FOR ? info.connection.remoteAddress : (info.headers['x-forwarded-for'] || info.connection.remoteAddress);
 				/* Enhanced User Block System [E] */
@@ -551,7 +553,7 @@ function processClientRequest($c, msg) {
 			}
 			msg.value = msg.value.substr(0, 200);
 			if ($c.admin) {
-				if (!processAdmin($c.id, msg.value)) break;
+				if (!processAdmin(msg.id, msg.value, msg.name)) break;
 			}
 			checkTailUser($c.id, $c.place, msg);
 			if (msg.whisper) {

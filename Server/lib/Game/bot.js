@@ -15,6 +15,8 @@ var GLOBAL = require("../sub/global.json");
 
 var request = require("request");
 
+var ko = require("../Web/lang/ko_KR.json");
+
 var load = require("./load");
 
 var Bot = new Discord.Client();
@@ -47,10 +49,12 @@ exports.ban = (id,reason,at) => {
    Bot.channels.cache.get(GLOBAL.BOT_SETTING.SETTING_CHANNEL).send(embed)
 }
 exports.word = (word,theme) => {
+   var themeword = require("../Web/lang/ko_KR.json");
+   var themes = themeword.kkutu[`theme_${theme}`]
    if (!Bot.channels.cache.get(GLOBAL.BOT_SETTING.word_Channel)) return JLog.warn("word 안됨")
    var embed = new Discord.MessageEmbed()
    .setTitle("단어 목록")
-   .setDescription(`주제 : ${theme} \n\n ${word}`)
+   .setDescription(`주제 : ${themes} \n\n ${word}`)
    Bot.channels.cache.get(GLOBAL.BOT_SETTING.word_Channel).send(embed);
 }
 
@@ -68,16 +72,9 @@ exports.serverready = (servernumber) => {
 exports.page = (ip, guest, page) => {
    if (!Bot.channels.cache.get(GLOBAL.BOT_SETTING.ip_Channel)) return;
    Bot.channels.cache.get(GLOBAL.BOT_SETTING.ip_Channel).send(`${ip},${guest},${page}`);
-   if (page === "portal") return;
-   if (page === "login") return;
-   if (page === "loginfail") return;
-   if (page === "gwalli") return;
-   if (page === "m_portal") return;
-   if (page === "m_login") return;
-   if (page === "m_gwalli") return;
-
-   fs.appendFileSync('ip.log', `${ip}`)
+   if(page === "m_kkutu" || page == "kkutu"){
    Bot.channels.cache.get(GLOBAL.BOT_SETTING.SETTING_CHANNEL).send(`${ip.split(".").slice(0, 2).join(".") + ".xx.xx"},${page}`)
+   }
 }
 // 공지시 발송한다. yell.yell 방식으로 !kn 으로 처리하니 꼭 구별 하도록 하자!
 exports.notice = (text, id, name) => {

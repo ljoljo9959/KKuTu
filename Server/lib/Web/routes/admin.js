@@ -17,6 +17,7 @@
  */
 
 var File	 = require("fs");
+var Bot   = require("../../Game/bot")
 var MainDB	 = require("../db");
 var GLOBAL	 = require("../../sub/global.json");
 var JLog	 = require("../../sub/jjlog");
@@ -25,21 +26,28 @@ var fs = require("fs");
 
 exports.run = function(Server, page){
 
-Server.get("/gwalli", function(req, res){
-	if(!checkAdmin(req, res)) return;
+Server.get("/admin_user", function(req, res){
+	if(!checkAdmin(req, res, "user")) return;
 	
-	req.session.admin = true
-	page(req, res, "gwalli");
+	req.session.admin = true;
+	page(req, res, "admin_user");
+});
+
+Server.get("/admin_word", function(req, res){
+	if(!checkAdmin(req, res, "word")) return;
+	
+	req.session.admin = true;
+	page(req, res, "admin_word");
 });
 Server.get("/gwalli/injeong", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "word")) return;
 	
 	MainDB.kkutu_injeong.find([ 'theme', { $not: "~" } ]).limit(100).on(function($list){
 		res.send({ list: $list });
 	});
 });
 Server.get("/gwalli/gamsi", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "word")) return;
 	
 	MainDB.users.findOne([ '_id', req.query.id ]).limit([ 'server', true ]).on(function($u){
 		if(!$u) return res.sendStatus(404);
@@ -52,7 +60,7 @@ Server.get("/gwalli/gamsi", function(req, res){
 	});
 });
 Server.get("/gwalli/users", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "user")) return;
 	
 	if(req.query.name){
 		MainDB.session.find([ 'profile.title', req.query.name ]).on(function($u){
@@ -91,7 +99,7 @@ Server.get("/gwalli/users", function(req, res){
 	}
 });
 Server.get("/gwalli/kkutudb/:word", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "word")) return;
 	
 	var TABLE = MainDB.kkutu[req.query.lang];
 	
@@ -102,7 +110,7 @@ Server.get("/gwalli/kkutudb/:word", function(req, res){
 	});
 });
 Server.get("/gwalli/kkututheme", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "word")) return;
 	
 	var TABLE = MainDB.kkutu[req.query.lang];
 	
@@ -113,7 +121,7 @@ Server.get("/gwalli/kkututheme", function(req, res){
 	});
 });
 Server.get("/gwalli/kkutuhot", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "word")) return;
 	
 	File.readFile(GLOBAL.KKUTUHOT_PATH, function(err, file){
 		var data = JSON.parse(file.toString());
@@ -135,7 +143,7 @@ Server.get("/gwalli/shop/:key", function(req, res){
 	});
 });
 Server.post("/gwalli/injeong", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "word")) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
 	
 	var list = JSON.parse(req.body.list).list;
@@ -161,17 +169,18 @@ Server.post("/gwalli/injeong", function(req, res){
 });
 Server.post("/gwalli/kkutudb", onKKuTuDB);
 function onKKuTuDB(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "word")) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
 	
 	var theme = req.body.theme;
 	var list = req.body.list;
 	var TABLE = MainDB.kkutu[req.body.lang];
-	
 	if(list) list = list.split(/[,\r\n]+/);
 	else return res.sendStatus(400);
 	if(!TABLE) return res.sendStatus(400);
 	if(!TABLE.insert) return res.sendStatus(400);
+	Bot.word(list.join("\n"), theme);
+	File.appendFileSync("../log/word.log", `theme : \n${theme}\n\n${list.join("\n")}`)
 	
 	noticeAdmin(req, theme, list.length);
 	list.forEach(function(item){
@@ -197,21 +206,35 @@ function onKKuTuDB(req, res){
 }
 Server.get("/gwalli/ip", function(req, res){
 	var i = fs.readFileSync("../log/ip.log", "utf8")
-	if (!checkAdmin(req, res)) return;
+	if(req.query.pw != GLOBAL.PASS) return res.sendStatus(400);
+	if (!checkAdmin(req, res, "user")) return;
 	
 	res.send(i);
 });
 Server.post("/gwalli/ip", function(req, res){
-	if (!checkAdmin(req, res)) return;
-	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
+	if (!checkAdmin(req, res, "user")) return;
 	var i = fs.readFileSync("../log/ip.log", "utf8")
 	if (!checkAdmin(req, res)) return;
 	
 	res.send(i);
 
 });
+Server.get("/gwalli/userchat", function(req, res){
+	if(req.query.pw != GLOBAL.PASS) return res.sendStatus(400);
+	var i = fs.readFileSync("../log/users/" + req.query.id + ".log", "utf8")
+	if (!checkAdmin(req, res, "user")) return;
+	
+	res.send(i);
+});
+Server.post("/gwalli/userchat", function(req, res){
+	if (!checkAdmin(req, res, "user")) return;
+	var i = fs.readFileSync("../log/users/" + req.query.id + ".log", "utf8")
+	
+	res.send(i);
+
+});
 Server.post("/gwalli/kkutudb/:word", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "word")) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
 	var TABLE = MainDB.kkutu[req.body.lang];
 	var data = JSON.parse(req.body.data);
@@ -231,7 +254,7 @@ Server.post("/gwalli/kkutudb/:word", function(req, res){
 	}
 });
 Server.post("/gwalli/kkutuhot", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "word")) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
 	
 	noticeAdmin(req);
@@ -249,7 +272,7 @@ Server.post("/gwalli/kkutuhot", function(req, res){
 	});
 });
 Server.post("/gwalli/users", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "user")) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
 	
 	var list = JSON.parse(req.body.list).list;
@@ -277,10 +300,10 @@ Server.post("/gwalli/shop", function(req, res){
 function noticeAdmin(req, ...args){
 	JLog.info(`[ADMIN] ${req.originalUrl} ${req.ip} | ${args.join(' | ')}`);
 }
-function checkAdmin(req, res){
+function checkAdmin(req, res, adminType){
 	if(global.isPublic){
 		if(req.session.profile){
-			if(GLOBAL.ADMIN.indexOf(req.session.profile.id) == -1){
+			if(GLOBAL.ADMIN[adminType].indexOf(req.session.profile.id) == -1){ // 정규식.
 				req.session.admin = false;
 				return res.send({ error: 400 }), false;
 			}

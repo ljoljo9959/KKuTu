@@ -31,7 +31,7 @@ function process(req, accessToken, MainDB, $p, done) {
 
     let now = Date.now();
     $p.sid = req.session.id;
-    req.session.admin = GLOBAL.ADMIN.includes($p.id);
+    req.session.admin = GLOBAL.ADMIN.user.includes($p.id) || GLOBAL.ADMIN.word.includes($p.id)
     req.session.authType = $p.authType;
     MainDB.session.upsert([ '_id', req.session.id ]).set({
         'profile': $p,

@@ -378,6 +378,7 @@ exports.Client = function(socket, profile, sid){
 		fs.appendFileSync(`../log/users/guest(${my.remoteAddress.slice(7)}).log`, `(${date}) | ${my.id} : ${msg}\n`, 'utf-8');
 		else
 		fs.appendFileSync(`../log/users/${my.id}.log`, `(${date}) | ${my.id} : ${msg}\n`, 'utf-8');
+		fs.appendFileSync(`../log/chat.log`, `(${date}) | ${my.id}(${my.remoteAddress.slice(7)}) : ${msg}\n`, 'utf-8');
 	};
 	my.checkExpire = function(){
 		var now = new Date();

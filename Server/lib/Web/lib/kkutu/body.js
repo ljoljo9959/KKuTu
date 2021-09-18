@@ -237,7 +237,7 @@ function onMessage(data){
 			$data._okg = data.okg;
 			$data._gaming = false;
 			$data.box = data.box;
-			notice("현재 체리끄투는 테스트 용도로 서버를 열려있습니다. 갑자기 닫힐 수 있으니 유의하세요!");
+			notice(L['welcomenotice'])
 			if(location.hash[1]) tryJoin(location.hash.slice(1));
 			updateUI(undefined, true);
 			welcome();

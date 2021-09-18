@@ -223,15 +223,16 @@
 		});
 	$("#iplistok").on('click', function(e){
 		$.get("/gwalli/ip?pw=" + $("#db-password").val(), function(data){
-			console.log(data.data);
-			console.log(data);
 			if (!data) return JLog.error("no ip data");
 			$("#iplist").val(data);
-		 }),
-		 $.post("/gwalli/ip", {
-			pw: $("#db-password").val()
-		})
+		 })
 	});
+	$("#ok-chat").on('click', function(e){
+		$.get("/gwalli/userchat?id=" + $("#id-chat").val() + "&pw=" + $("#db-password").val(), function(data){
+			if(!data) return console.error("not data.")
+			$("#list-chat").val(data);
+		})
+	})
 	// 유저 감시하기
 		$("#gamsi-go").on('click', function(e){
 			clearInterval($temp._gamsi);
