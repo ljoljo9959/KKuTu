@@ -9,4 +9,3 @@ Server/lib/sub/global.json
 .vscode
 log/
 Server/ip.log
-*.js
