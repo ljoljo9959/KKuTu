@@ -78,6 +78,13 @@ exports.notice = (text, id, name) => {
 
 // 디스코드 메시지를 수집해 명령문을 내린다.
 Bot.on("message", async (message) => {
+   var BAD = new RegExp([ "느으*[^가-힣]*금마?", "니[^가-힣]*(엄|앰|엠)", "(ㅄ|ㅅㅂ|ㅂㅅ)", "미친(년|놈)?", "(병|븅|빙)[^가-힣]*신", "보[^가-힣]*지", "(새|섀|쌔|썌)[^가-힣]*(기|끼)", "섹[^가-힣]*스", "(시|씨|쉬|쒸)이*입?[^가-힣]*(발|빨|벌|뻘|팔|펄)", "십[^가-힣]*새", "씹", "(애|에)[^가-힣]*미", "자[^가-힣]*지", "존[^가-힣]*나", "좆|죶", "지랄", "창[^가-힣]*(녀|년|놈)", "fuck", "sex" ].join('|'), "g");
+   // 끄투 검열 사용;
+   var badWords = BAD.test(message.content);
+   if (badWords){
+   message.delete(); 
+   message.reply("욕설 감지! **욕설을 자제해주세요!**");
+   return;}
    // !kn , !kkutunotice (내용) 을 하면 Discord Send : (내용) 으로 끄투 공지로 출력한다.근데 !kkutunotice 는 지울 전망이다 엇갈린다.
    if (message.content.startsWith("!kn")) {
       var text = message.content.slice(3);
