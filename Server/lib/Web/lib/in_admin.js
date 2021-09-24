@@ -204,14 +204,15 @@
 					kkutu: $data.get(2).value,
 					box: $data.get(3).value,
 					equip: $data.get(4).value,
-					exordial: $data.get(5).value,
-					server: $data.get(6).value,
-					lastLogin: $data.get(7).value,
-					black: $data.get(8).value,
+					nickname: $data.get(5).value,
+					nickChanged: $data.get(6).value,
+					exordial: $data.get(7).value,
+					server: $data.get(8).value,
+					lastLogin: $data.get(9).value,
+					black: $data.get(10).value,
 					/* Enhanced User Block System [S] */
-					blockedUntil: $data.get(9).value,
-					friends: $data.get(10).value
-					/* Enhanced User Block System [E] */
+					blockedUntil: $data.get(11).value,	
+					friends: $data.get(12).value
 				});
 			});
 			$.post("/gwalli/users", {

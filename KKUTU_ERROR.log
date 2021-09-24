@@ -118,4 +118,70 @@ TypeError: GLOBAL.ADMIN.indexOf is not a function
     at Socket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\connection.js:133:12)
     at Socket.emit (events.js:314:20)
     at addChunk (_stream_readable.js:297:12)
-    at readableAddChunk (_stream_readable.js:272:9)
+    at readableAddChunk (_stream_readable.js:272:9):9304 [2021-9-19 7:48:21 ├F10: PM┤] ERROR: ReferenceError: s is not defined
+ReferenceError: s is not defined
+    at exports.Client.my.chat (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\Game\kkutu.js:387:66)
+    at Object.KKuTu.onClientMessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\Game\slave.js:238:9)
+    at WebSocket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\Game\kkutu.js:298:11)
+    at WebSocket.emit (events.js:314:20)
+    at Receiver._receiver.onmessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:143:47)
+    at Receiver.dataMessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:389:14)
+    at Receiver.getData (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:330:12)
+    at Receiver.startLoop (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:165:16)
+    at Receiver.add (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:139:10)
+    at Socket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:139:22):9304 [2021-9-19 7:48:23 ├F10: PM┤] ERROR: SyntaxError: Unexpected token � in JSON at position 0
+SyntaxError: Unexpected token � in JSON at position 0
+    at JSON.parse (<anonymous>)
+    at WebSocket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\Game\kkutu.js:294:11)
+    at WebSocket.emit (events.js:314:20)
+    at Receiver._receiver.onmessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:143:47)
+    at Receiver.dataMessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:389:14)
+    at Receiver.getData (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:330:12)
+    at Receiver.startLoop (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:165:16)
+    at Receiver.add (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:139:10)
+    at Socket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:139:22)
+    at Socket.emit (events.js:314:20):9304 [2021-9-19 7:48:25 ├F10: PM┤] ERROR: SyntaxError: Unexpected token  in JSON at position 0
+SyntaxError: Unexpected token  in JSON at position 0
+    at JSON.parse (<anonymous>)
+    at WebSocket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\Game\kkutu.js:294:11)
+    at WebSocket.emit (events.js:314:20)
+    at Receiver._receiver.onmessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:143:47)
+    at Receiver.dataMessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:389:14)
+    at Receiver.getData (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:330:12)
+    at Receiver.startLoop (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:165:16)
+    at Receiver.add (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:139:10)
+    at Socket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:139:22)
+    at Socket.emit (events.js:314:20):9304 [2021-9-19 7:48:28 ├F10: PM┤] ERROR: SyntaxError: Unexpected token  in JSON at position 0
+SyntaxError: Unexpected token  in JSON at position 0
+    at JSON.parse (<anonymous>)
+    at WebSocket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\Game\kkutu.js:294:11)
+    at WebSocket.emit (events.js:314:20)
+    at Receiver._receiver.onmessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:143:47)
+    at Receiver.dataMessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:389:14)
+    at Receiver.getData (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:330:12)
+    at Receiver.startLoop (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:165:16)
+    at Receiver.add (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:139:10)
+    at Socket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:139:22)
+    at Socket.emit (events.js:314:20):9304 [2021-9-19 7:48:30 ├F10: PM┤] ERROR: SyntaxError: Unexpected token  in JSON at position 0
+SyntaxError: Unexpected token  in JSON at position 0
+    at JSON.parse (<anonymous>)
+    at WebSocket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\Game\kkutu.js:294:11)
+    at WebSocket.emit (events.js:314:20)
+    at Receiver._receiver.onmessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:143:47)
+    at Receiver.dataMessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:389:14)
+    at Receiver.getData (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:330:12)
+    at Receiver.startLoop (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:165:16)
+    at Receiver.add (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:139:10)
+    at Socket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:139:22)
+    at Socket.emit (events.js:314:20):9304 [2021-9-19 7:48:31 ├F10: PM┤] ERROR: SyntaxError: Unexpected token � in JSON at position 0
+SyntaxError: Unexpected token � in JSON at position 0
+    at JSON.parse (<anonymous>)
+    at WebSocket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\Game\kkutu.js:294:11)
+    at WebSocket.emit (events.js:314:20)
+    at Receiver._receiver.onmessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:143:47)
+    at Receiver.dataMessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:389:14)
+    at Receiver.getData (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:330:12)
+    at Receiver.startLoop (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:165:16)
+    at Receiver.add (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:139:10)
+    at Socket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:139:22)
+    at Socket.emit (events.js:314:20)

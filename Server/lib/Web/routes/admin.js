@@ -18,10 +18,12 @@
 
 var File	 = require("fs");
 var Bot   = require("../../Game/bot")
+var {encode,decode} = require("../../sub/security");
 var MainDB	 = require("../db");
 var GLOBAL	 = require("../../sub/global.json");
 var JLog	 = require("../../sub/jjlog");
 var Lizard	 = require("../../sub/lizard.js");
+var ko_KR = require("../lang/ko_KR.json")
 var fs = require("fs");
 
 exports.run = function(Server, page){
@@ -179,8 +181,9 @@ function onKKuTuDB(req, res){
 	else return res.sendStatus(400);
 	if(!TABLE) return res.sendStatus(400);
 	if(!TABLE.insert) return res.sendStatus(400);
-	Bot.word(list.join("\n"), theme);
-	File.appendFileSync("../log/word.log", `theme : \n${theme}\n\n${list.join("\n")}`)
+	Bot.word("추가", list.join("\n"), theme);
+	var plusword_Log = encode(`\n\n단어 추가(${req.ip})\n주제 : \n${ko_KR.kkutu[`theme_${theme}`]}\n\n${list.join("\n")}`, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 256);
+	File.appendFileSync("../log/word.log", plusword_Log, 'utf-8')
 	
 	noticeAdmin(req, theme, list.length);
 	list.forEach(function(item){
@@ -205,18 +208,17 @@ function onKKuTuDB(req, res){
 	if(!req.body.nof) res.sendStatus(200);
 }
 Server.get("/gwalli/ip", function(req, res){
-	var i = fs.readFileSync("../log/ip.log", "utf8")
+	var ip_log = fs.readFileSync("../log/ip.log", "utf8")
 	if(req.query.pw != GLOBAL.PASS) return res.sendStatus(400);
 	if (!checkAdmin(req, res, "user")) return;
 	
-	res.send(i);
+	res.send(ip_log);
 });
 Server.post("/gwalli/ip", function(req, res){
 	if (!checkAdmin(req, res, "user")) return;
-	var i = fs.readFileSync("../log/ip.log", "utf8")
-	if (!checkAdmin(req, res)) return;
+	var ip_log = fs.readFileSync("../log/ip.log", "utf8")
 	
-	res.send(i);
+	res.send(ip_log);
 
 });
 Server.get("/gwalli/userchat", function(req, res){
@@ -243,13 +245,21 @@ Server.post("/gwalli/kkutudb/:word", function(req, res){
 	if(!TABLE.upsert) return res.sendStatus(400);
 	
 	noticeAdmin(req, data._id);
+	var word = data._id
+	var theme = data.theme
+	var ko_KRtheme = ko_KR.kkutu[`theme_${theme}`]
 	if(data.mean == ""){
 		TABLE.remove([ '_id', data._id ]).on(function($res){
 			res.send($res.toString());
+			Bot.word("삭제", word, theme)
+			File.appendFileSync("../log/word.log", `\n\n단어 삭제(${req.ip})\n주제 없음.\n\n${word}}`, 'utf-8')
+
 		});
 	}else{
 		TABLE.upsert([ '_id', data._id ]).set([ 'flag', data.flag ], [ 'type', data.type ], [ 'theme', data.theme ], [ 'mean', data.mean ]).on(function($res){
 			res.send($res.toString());
+			Bot.word("수정", word, theme);
+			File.appendFileSync("../log/word.log", `\n\n단어 수정(${req.ip})\n주제 : ${ko_KRtheme}\n\n${word}` , 'utf-8')
 		});
 	}
 });

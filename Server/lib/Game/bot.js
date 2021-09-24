@@ -19,6 +19,8 @@ var ko = require("../Web/lang/ko_KR.json");
 
 var load = require("./load");
 
+var moment = require("moment");
+
 var Bot = new Discord.Client();
 var fs = require("fs")
 
@@ -34,27 +36,30 @@ exports.chat = (text, id, name, channelId) => {
    Bot.channels.cache.get("835829185367900191").send(text + `\n(${id}),{${channelId}}`)
 }
 // 지금은 안되지만 언젠간 될 kill 명령어 시 발행한다.
-exports.ban = (id,reason,at) => {
-   if (!Bot.channels.cache.get(GLOBAL.BOT_SETTING.SETTING_CHANNEL)) return JLog.warn("kill 안됨")
-   if (!reason) reason = "kill";
-   if (!at) at = "kill";
+exports.ban = (Type,id,reason,at) => {
+   if (!Bot.channels.cache.get(GLOBAL.BOT_SETTING.BAN_CHANNEL)) return JLog.warn("kill 안됨")
+   if (!reason) reason = "없음";
+   if (!at) at = "없음";
    var embed = new Discord.MessageEmbed()
-   .setTitle("차단")
+   .setTitle("체리끄투 || 차단")
    .setDescription("")
    .addFields(
       { name : "ID" , value : id},
       { name : "이유", value : reason},
-      { name : "시간", value : at}
+      { name : "시간", value : Type + "(" + at + ")"}
    )
-   Bot.channels.cache.get(GLOBAL.BOT_SETTING.SETTING_CHANNEL).send(embed)
+   .setColor("ff0000")
+   .setTimestamp();
+   Bot.channels.cache.get(GLOBAL.BOT_SETTING.BAN_CHANNEL).send(embed)
 }
-exports.word = (word,theme) => {
+exports.word = (type,word,theme) => {
    var themeword = require("../Web/lang/ko_KR.json");
    var themes = themeword.kkutu[`theme_${theme}`]
+   if (!themes) var themes = themeword.GLOBAL.NONE;
    if (!Bot.channels.cache.get(GLOBAL.BOT_SETTING.word_Channel)) return JLog.warn("word 안됨")
    var embed = new Discord.MessageEmbed()
-   .setTitle("단어 목록")
-   .setDescription(`주제 : ${themes} \n\n ${word}`)
+   .setTitle("단어 " + type +" 목록")
+   .setDescription(`주제 : ${themes} \n\n ${word}`);
    Bot.channels.cache.get(GLOBAL.BOT_SETTING.word_Channel).send(embed);
 }
 
@@ -71,7 +76,9 @@ exports.serverready = (servernumber) => {
 // kkutu 진입시 채널에알린다. ~~근데 m_은 따로 안막았다 왜냐하면 체리끄투는 모바일을 막았기 때문이다.~~~~
 exports.page = (ip, guest, page) => {
    if (!Bot.channels.cache.get(GLOBAL.BOT_SETTING.ip_Channel)) return;
+   const thisDate = moment().format("MM-DD|HH:mm:ss");
    Bot.channels.cache.get(GLOBAL.BOT_SETTING.ip_Channel).send(`${ip},${guest},${page}`);
+   fs.appendFileSync('../log/all_ip.log', `\n(${thisDate})${ip},${guest},${page}`);
    if(page === "m_kkutu" || page == "kkutu"){
    Bot.channels.cache.get(GLOBAL.BOT_SETTING.SETTING_CHANNEL).send(`${ip.split(".").slice(0, 2).join(".") + ".xx.xx"},${page}`)
    }

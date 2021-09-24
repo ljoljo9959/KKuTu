@@ -80,12 +80,12 @@ Pub.ready = function(isPub){
 			DB.kkutu_injeong = new mainAgent.Table("kkutu_injeong");
 			DB.kkutu_shop = new mainAgent.Table("kkutu_shop");
 			DB.kkutu_shop_desc = new mainAgent.Table("kkutu_shop_desc");
-			
 			DB.session = new mainAgent.Table("session");
 			DB.users = new mainAgent.Table("users");
 			/* Enhanced User Block System [S] */
 			DB.ip_block = new mainAgent.Table("ip_block");
 			/* Enhanced User Block System [E] */
+			DB.login = new mainAgent.Table("login");
 			
 			if(exports.ready) exports.ready(Redis, Pg);
 			else JLog.warn("DB.onReady was not defined yet.");

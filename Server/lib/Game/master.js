@@ -21,6 +21,7 @@ var File = require('fs');
 var moment = require("moment");
 var WebSocket = require('ws');
 var https = require('https');
+var {encode} = require("../sub/security");
 var HTTPS_Server;
 // var Heapdump = require("heapdump");
 var KKuTu = require('./kkutu');
@@ -47,14 +48,14 @@ var WDIC = {};
 const DEVELOP = exports.DEVELOP = global.test || false;
 const GUEST_PERMISSION = exports.GUEST_PERMISSION = {
 	'create': true,
-	'enter': true,
-	'talk': true,
-	'practice': true,
-	'ready': true,
-	'start': true,
-	'invite': true,
+	'enter': false,
+	'talk': false,
+	'practice': false,
+	'ready': false,
+	'start': false,
+	'invite': false,
 	'inviteRes': true,
-	'kick': true,
+	'kick': false,
 	'kickVote': true,
 	'wp': true
 };
@@ -125,8 +126,10 @@ function processAdmin(id, value, name){
 				var args = value.split(",");
 				if(args.length == 2){
 					MainDB.users.update([ '_id', args[0].trim() ]).set([ 'black', args[1].trim() ]).on();
+					Bot.ban("계정 정지",args[0].trim(),args[1].trim(),"기간 없음")
 				}else if(args.length == 3){
 					MainDB.users.update([ '_id', args[0].trim() ]).set([ 'black', args[1].trim() ], [ 'blockedUntil', addDate(parseInt(args[2].trim())) ]).on();				
+					Bot.ban("계정 정지",args[0].trim(),args[1].trim(),addDate(parseInt(args[2].trim())))
 				}else return null;
 				
 				JLog.info(`[Block] 사용자 #${args[0].trim()}(이)가 이용제한 처리되었습니다.`);
@@ -144,8 +147,10 @@ function processAdmin(id, value, name){
 				var args = value.split(",");
 				if(args.length == 2){
 					MainDB.ip_block.update([ '_id', args[0].trim() ]).set([ 'reasonBlocked', args[1].trim() ]).on();
+					Bot.ban("아이피 정지",args[0].trim(),args[1].trim(),"기간 없음");
 				}else if(args.length == 3){
-					MainDB.ip_block.update([ '_id', args[0].trim() ]).set([ 'reasonBlocked', args[1].trim() ], [ 'ipBlockedUntil', addDate(parseInt(args[2].trim())) ]).on();				
+					MainDB.ip_block.update([ '_id', args[0].trim() ]).set([ 'reasonBlocked', args[1].trim() ], [ 'ipBlockedUntil', addDate(parseInt(args[2].trim())) ]).on();			
+					Bot.ban("아이피 정지",args[0].trim(),args[1].trim(),addDate(parseInt(args[2].trim())))	
 				}else return null;
 				
 				JLog.info(`[Block] IP 주소 ${args[0].trim()}(이)가 이용제한 처리되었습니다.`);
@@ -487,6 +492,8 @@ function joinNewUser($c) {
 		guest: $c.guest,
 		box: $c.box,
 		playTime: $c.data.playTime,
+		nickname: $c.nickname,
+		exordial: $c.exordial,
 		okg: $c.okgCount,
 		users: KKuTu.getUserList(),
 		rooms: KKuTu.getRoomList(),
@@ -498,10 +505,26 @@ function joinNewUser($c) {
 	narrateFriends($c.id, $c.friends, "on");
 	KKuTu.publish('conn', {user: $c.getData()});
 
+	setInterval(() => {
+		$c.send('reloadData', {
+			id: $c.id,
+			box: $c.box,
+			nickname: $c.nickname,
+			exordial: $c.exordial,
+			playTime: $c.data.playTime,
+			okg: $c.okgCount,
+			users: KKuTu.getUserList(),
+			rooms: KKuTu.getRoomList(),
+			friends: $c.friends,
+			admin: $c.admin
+		});
+	}, 18000);
+
 	JLog.info("New user #" + $c.id);
 
 	const thisDate = moment().format("MM-DD|HH:mm");
-	File.appendFileSync("../Log/ip.log", `\nJoin: {${thisDate}}| [${$c.id}] | (${$c.remoteAddress.slice(7)})`, 'utf-8');
+	var iplog = `\nJoin: {${thisDate}}| [${$c.id}] | (${$c.remoteAddress.slice(7)})`
+	File.appendFileSync("../Log/ip.log",`${iplog}`, 'utf-8');
 }
 
 KKuTu.onClientMessage = function ($c, msg) {
@@ -541,9 +564,26 @@ function processClientRequest($c, msg) {
 
 			$c.publish('yell', {value: msg.value});
 			break;
+			case 'reloadData':
+				$c.send('reloadData', {
+					id: $c.id,
+					box: $c.box,
+					nickname: $c.nickname,
+					exordial: $c.exordial,
+					playTime: $c.data.playTime,
+					okg: $c.okgCount,
+					users: KKuTu.getUserList(),
+					rooms: KKuTu.getRoomList(),
+					friends: $c.friends,
+					admin: $c.admin
+				});
+				case 'bulkRefresh':
+					for(let i in DIC) DIC[i].refresh();
+					break;
 		case 'refresh':
 			$c.refresh();
 			break;
+
 		case 'talk':
 			if (!msg.value) return;
 			if (!msg.value.substr) return;
@@ -689,5 +729,6 @@ KKuTu.onClientClosed = function($c, code){
 	KKuTu.publish('disconn', { id: $c.id });
 	const thisDate = moment().format("MM-DD|HH:mm");
 	JLog.alert("Exit #" + $c.id);
-	File.appendFileSync("../Log/ip.log", `\nExit: {${thisDate}}| [${$c.id}] | (${$c.remoteAddress.slice(7)})`, 'utf-8');
+	var ip_log = `\nExit: {${thisDate}}| [${$c.id}] | (${$c.remoteAddress.slice(7)})`
+	File.appendFileSync("../Log/ip.log", `${ip_log}`, 'utf-8');
 };

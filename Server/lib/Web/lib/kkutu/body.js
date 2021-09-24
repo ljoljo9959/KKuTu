@@ -235,9 +235,12 @@ function onMessage(data){
 			$data._friends = {};
 			$data._playTime = data.playTime;
 			$data._okg = data.okg;
+			$data.nickname = data.nickname;
+			$data.exordial = data.exordial;
 			$data._gaming = false;
 			$data.box = data.box;
 			notice(L['welcomenotice'])
+			if($data.guest) notice(L['welcomeguest'])
 			if(location.hash[1]) tryJoin(location.hash.slice(1));
 			updateUI(undefined, true);
 			welcome();
@@ -349,6 +352,20 @@ function onMessage(data){
 				updateCommunity();
 			}
 			break;
+			case 'reloadData':
+				$data.id = data.id;
+				$data.admin = data.admin;
+				if(!$data._gaming) $data.users = data.users;
+				$data.rooms = data.rooms;
+				$data.friends = data.friends;
+				$data._playTime = data.playTime;
+				$data._okg = data.okg;
+				$data.nickname = data.nickname;
+				$data.exordial = data.exordial;
+				$data.box = data.box;
+				updateUI(undefined, true);
+				updateCommunity();
+				break;
 		case 'friendEdit':
 			$data.friends = data.friends;
 			updateCommunity();
@@ -539,6 +556,9 @@ function welcome(){
 	}, 2000);
 	
 	if($data.admin) console.log("관리자 모드");
+
+
+	isWelcome = true;
 }
 function getKickText(profile, vote){
 	var vv = L['agree'] + " " + vote.Y + ", " + L['disagree'] + " " + vote.N + L['kickCon'];
@@ -1249,6 +1269,8 @@ function drawMyDress(avGroup){
 	renderMoremi($view, my.equip);
 	$(".dress-type.selected").removeClass("selected");
 	$("#dress-type-all").addClass("selected");
+	
+	$("#dress-nickname").val(my.nickname);
 	$("#dress-exordial").val(my.exordial);
 	drawMyGoods(avGroup || true);
 }
