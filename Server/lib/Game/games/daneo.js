@@ -169,7 +169,54 @@ exports.submit = function(client, text, data){
 			}
 		}
 		DB.kkutu[l].findOne([ '_id', text ]).on(onDB);
-	}else{
+	}else if(my.opts.return){
+		l = my.rule.lang;
+		my.game.loading = true;
+		function onDB($doc){
+			function preApproved(){
+				if(my.game.late) return;
+				if(!my.game.chain) return;
+
+				my.game.loading = false;
+				my.game.late = true;
+				clearTimeout(my.game.turnTimer);
+				t = tv - my.game.turnAt;
+				score = my.getScore(text, t);
+				my.game.chain.push(text);
+				my.game.roundTime -= t;
+				client.game.score += 0;
+				client.publish('turnEnd', {
+					ok: true,
+					value: text,
+					mean: $doc.mean,
+					theme: $doc.theme,
+					wc: $doc.type,
+					score: score,
+					bonus: 0,
+					baby: $doc.baby
+				}, true);
+				if(my.game.mission === true){
+					my.game.mission = getMission(my.rule.lang);
+				}
+				setTimeout(my.turnNext, my.game.turnTime / 6);
+				if(!client.robot){
+					client.invokeWordPiece(text, 1);
+					DB.kkutu[l].update([ '_id', text ]).set([ 'hit', $doc.hit + 1 ]).on();
+				}
+			}
+			function denied(code){
+				my.game.loading = false;
+				client.publish('turnError', { code: code || 404, value: text }, true);
+			}
+			if($doc){
+				if($doc.theme.match(toRegex(my.game.theme)) == null) denied(407);
+				else preApproved();
+			}else{
+				denied();
+			}
+		}
+		DB.kkutu[l].findOne([ '_id', text ]).on(onDB);
+	} else {
 		client.publish('turnError', { code: 409, value: text }, true);
 	}
 };
