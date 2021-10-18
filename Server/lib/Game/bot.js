@@ -7,124 +7,57 @@
 // 모듈 불러온다.
 // 디스코드 봇 돌리기 위해 모듈을 불러온다.
 
-var Discord = require("discord.js");
+const discord = require("discord.js");
 
-var JLog = require("../sub/jjlog");
+const JLog = require("../sub/jjlog");
 
-var GLOBAL = require("../sub/global.json");
+const GLOBAL = require("../sub/global.json");
 
-
-
-var load = require("./load");
-
-var moment = require("moment");
-
-var Bot = new Discord.Client();
-var fs = require("fs")
+const MainDB = require("../Web/db");
 
 
-exports.ban = (Type,id,reason,at) => {
-   if (!Bot.channels.cache.get(GLOBAL.BOT_SETTING.BAN_CHANNEL)) return JLog.warn("kill 안됨");
-   if (!reason) reason = "없음";
-   if (!at) at = "없음";
-   var embed = new Discord.MessageEmbed()
-   .setTitle("체리끄투 || 차단")
-   .setDescription("")
-   .addFields(
-      { name : "ID" , value : id},
-      { name : "이유", value : reason},
-      { name : "일수", value : Type + "(" + at + ")"}
-   )
-   .setColor("ff0000")
-   .setTimestamp();
-   Bot.channels.cache.get(GLOBAL.BOT_SETTING.BAN_CHANNEL).send(embed);
-};
-exports.word = (type,word,theme) => {
-   var theme = Number(theme);
-   var themeword = require("../Web/lang/ko_KR.json");
-   var themes = themeword.kkutu[`theme_${theme}`];
-   if (!themes) var themes = themeword.GLOBAL.NONE;
-   if (!Bot.channels.cache.get(GLOBAL.BOT_SETTING.word_Channel)) return JLog.warn("word 안됨");
-   var embed = new Discord.MessageEmbed()
-   .setTitle("단어 " + type +" 목록")
-   .setDescription(`주제 : ${themes} \n\n ${word}`);
-   Bot.channels.cache.get(GLOBAL.BOT_SETTING.word_Channel).send(embed);
-};
+const moment = require("moment");
+
+var Bot = new discord.Client();
+const fs = require("fs")
 
 
-
-// kkutu 진입시 채널에알린다. ~~근데 m_은 따로 안막았다 왜냐하면 체리끄투는 모바일을 막았기 때문이다.~~~~
-exports.page = (ip, guest, page) => {
-   if (!Bot.channels.cache.get(GLOBAL.BOT_SETTING.ip_Channel)) return;
-   const thisDate = moment().format("MM-DD|HH:mm:ss");
-   Bot.channels.cache.get(GLOBAL.BOT_SETTING.ip_Channel).send(`${ip},${guest},${page}`);
-   fs.appendFileSync('../log/all_ip.log', `\n(${thisDate})${ip},${guest},${page}`);
-   if(page === "m_kkutu" || page == "kkutu"){
-   Bot.channels.cache.get(GLOBAL.BOT_SETTING.SETTING_CHANNEL).send(`${ip.split(".").slice(0, 2).join(".") + ".xx.xx"},${page}`);
-   };
-};
-// 공지시 발송한다. yell.yell 방식으로 !kn 으로 처리하니 꼭 구별 하도록 하자!
-exports.notice = (text, id, name) => {
-   var i;
-   if (!name) name = "끄투 전송";
-   if (!text) return JLog.warn("메시지 부족");
-   i = new Discord.MessageEmbed()
-      .setTitle("끄투 공지")
-      .setDescription(`**${text}**`)
-      .setFooter(`${id},[${name}]`);
-   if (!Bot.channels.cache.get(GLOBAL.BOT_SETTING.notice_Channel)) return;
-   Bot.channels.cache.get(GLOBAL.BOT_SETTING.notice_Channel).send(i);
-};
-
-// 디스코드 메시지를 수집해 명령문을 내린다.
-Bot.on("message", async (message) => {
-   var BAD = new RegExp([ "느으*[^가-힣]*금마?", "니[^가-힣]*(엄|앰|엠)", "(ㅄ|ㅅㅂ|ㅂㅅ)", "미친(년|놈)?", "(병|븅|빙)[^가-힣]*신", "보[^가-힣]*지", "(새|섀|쌔|썌)[^가-힣]*(기|끼)", "섹[^가-힣]*스", "(시|씨|쉬|쒸)이*입?[^가-힣]*(발|빨|벌|뻘|팔|펄)", "십[^가-힣]*새", "씹", "(애|에)[^가-힣]*미", "자[^가-힣]*지", "존[^가-힣]*나", "좆|죶", "지랄", "창[^가-힣]*(녀|년|놈)", "fuck", "sex" ].join('|'), "g");
-   // 끄투 검열 사용;
-   var badWords = BAD.test(message.content);
-   if (badWords){
-   message.delete(); 
-   message.reply("욕설 감지! **욕설을 자제해주세요!**");
-   return;}
-   // !kn , !kkutunotice (내용) 을 하면 Discord Send : (내용) 으로 끄투 공지로 출력한다.근데 !kkutunotice 는 지울 전망이다 엇갈린다.
-   if (message.content.startsWith("!kn")) {
-      var text = message.content.slice(3);
-
-      if (GLOBAL.BOT_SETTING.admin_yell_id.includes(message.author.id)) {
-         load.yell("Discord : " + text, message.author.id, message.author.username); // 처리 방법 변경함.
-      } else { // 위에 5516.. 체리끄투 관리자가 라면 공지가 되지만 아니라면 권한이 없다고 한다 근데 권한 없다고 3번이 뜬다 이유를 모른다.
-         message.reply("권한 없음");
-         return; // 그러고선 리턴을 해버린다 필요없긴 하지만.
+Bot.on("message" || "messageUpdate", async(message) =>{
+      if (message.content.startsWith("'search")) {
+         message.channel.startTyping();
+         var m = message.content.slice("'search ".length);
+         if (m.length <= 5)
+            return message.channel.stopTyping();
+         setTimeout(() => {
+            // 끄투 데이터 베이스 가져오기.
+            MainDB.users.findOne(['_id', m]).on(function (data) {
+               if (!data)
+                  return message.channel.send(new discord.MessageEmbed().setTitle("Not Data."));
+               var embed = new discord.MessageEmbed()
+                  .setTitle(`${data.nickname}'s Profile`)
+                  .setDescription("")
+                  .addFields(
+                     { name: "ID", value: data._id },
+                     { name: "KKuTu", value: data.kkutu }
+                  );
+               message.channel.stopTyping();
+               message.channel.send(embed);
+            }, 3 * 1000);
+         });
       };
-   };
-
-  if (message.content.startsWith("!end")){
-     if (GLOBAL.BOT_SETTING.admin_yell_id.indexOf(message.author.id) === -1) return;
-     var args = message.content.slice("/end".length);
-
-     var [id,imageURL] = args.split(",");
-
-     var users = message.mentions.users.first();
-
-     users.send(`<@${users.id}>(${users.username})님에게 ` + "체리끄투 부서 해고 통보가 날라왔습니다.").then((sentMessage) => {
-
-      setTimeout(() => {
-         var time = moment().format("YYYY년 MM월 DD일");
-
-         var embed = new Discord.MessageEmbed()
-         .setTitle(`${users.username}님의 해고 통지서`)
-         .setDescription(time + " 해고 되었습니다. \n 정확하게 이미지를 확인하여 주세요.")
-         .setImage(imageURL)
-         .setTimestamp()
-         .setFooter(`${message.author.username}`, message.author.displayAvatarURL({ dynamic : true}));
-         sentMessage.edit(embed)
-      }, 6 * 1000);
-        
-     });
-
-     
-  };
-}); // 여기서 이제 Bot.on 의 괄호가 끝난다.
-
+      if (message.content.startsWith("'ping")){
+         message.channel.startTyping(); //타이핑 시작.
+         setTimeout(() => {
+            var i = Bot.ws.ping;
+            
+            message.channel.stopTyping();
+            var embed = new discord.MessageEmbed()
+            .setTitle("🏓 Ping!")
+            .setDescription(`${i}ms`)
+            .setFooter(message.author.tag, message.author.displayAvatarURL({ dynamic: true }));
+         }, 2 * 1000);
+      }
+   })
 
 
 // 봇 로그인

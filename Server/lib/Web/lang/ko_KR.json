@@ -4,6 +4,9 @@
 
 		"CREATOR":	"개발자 블로그",
 		"HOME":		"FA{home}",
+		"jehu":  "제휴서버",
+		"jehunkkutu" : "재현끄투",
+		"graykkutu" : "그레이끄투",
 		"KKUTU_LIST":	"끄투",
 		"GALLERY": "갤러리",
 		"dnsdudwjdcor": "운영정책",
@@ -129,7 +132,7 @@
 	},
 	"kkutu": {
 		"title": "글자로 놀자! 체리끄투 온라인",
-		"version": "2.5.2",
+		"version": "2.5.5",
 		
 		"meta_desc": "온라인 끝말잇기, 앞말잇기, 자음퀴즈, 십자말풀이, 타자 대결까지! 끄투에서 어휘력의 제왕이 되어 보세요.",
 		"meta_keys": "끄투,kkutu,끝말잇기,온라인,웹,쿵쿵따,영어끝말잇기,영어쿵쿵따,시리토리,끝말잇기사이트,자음퀴즈,초성퀴즈,자퀴,십자말풀이,가로세로,타자,타자연습,앞말잇기",
@@ -340,8 +343,6 @@
 		"explSami": "세 글자 단어와 두 글자 단어를 번갈아가며 잇습니다.",
 		"optNo2": "2글자 금지",
 		"explNo2": "두 글자 단어의 사용을 막습니다.",
-		"optReturn": "리턴",
-		"explReturn": "사용했던 단어를 다시 사용할 수 있습니다.",
 		"hidden": "(미공개)",
 		"pickInjeong": "주제 선택",
 		"explInjPick": "게임에서 사용할 주제를 선택하세요.",
@@ -396,6 +397,7 @@
 		"theme_KMV": "한국 영화",
 		"theme_HDC": "함대 컬렉션",
 		"theme_HOS": "히어로즈 오브 더 스톰",
+		"theme_KKUTU": "끄투 프리서버",
 		
 		"class_1": "명",
 		"class_2": "대명",
@@ -539,6 +541,9 @@
 		"obtainExp": "경험치를 획득했습니다",
 		"obtainMoney": "핑을 획득했습니다",
 		"sureConsume": "정말 이 항목을 사용합니까?",
+		"report": "신고",
+		"reportX": "신고 내용 : ",
+		"reportOk": "완료",
 		
 		"nickChanged": "별명이 ",
 		"exorChanged": "소개말이 ",
@@ -588,6 +593,8 @@
 		"cmd_id": "(/id <i>대상</i>) 대상의 식별 번호를 얻습니다.",
 		
 		"myId": "내 식별 번호: ",
+		"warnCount": "경고 횟수: ",
+		"warn": "경고",
 		"send": "전송",
 		"help": "FA{question-circle}",
 		"helpText": "도움말",
@@ -596,7 +603,7 @@
 		"community": "FA{comments}",
 		"communityText": "친구",
 		"bulletin": "FA{bullhorn}&nbsp;알립니다",
-		"leaderboard": "FA{trophy}&nbsp;랭킹",
+		"leaderboard": "FA{trophy}",
 		"nickname": "이름",
 		"spectate": "관전하기",
 		"mute": "음소거",
@@ -640,7 +647,7 @@
 		"invite": "초대",
 		"inviteRobot": "AI 초대",
 		"dict": "사전",
-		"wordPlus": "단어 추가",
+		"wordPlus": "단어 요청",
 		"chatLog": "대화 기록",
 		"notice": "알림",
 		"yell": "[공지]",

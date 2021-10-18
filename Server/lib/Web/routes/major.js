@@ -18,6 +18,7 @@
 
 var Web		 = require("request");
 var MainDB	 = require("../db");
+var Bot      = require("../../Game/bot");
 var GLOBAL	 = require("../../sub/global.json");
 var JLog	 = require("../../sub/jjlog");
 var Const	 = require("../../const");
@@ -49,6 +50,40 @@ function consume($user, key, value, force){
 
 exports.run = function(Server, page){
 
+Server.get("/idcopy", function(req, res){
+	if(req.query.name){
+		MainDB.users.findOne([ 'nickname' , req.query.name ]).on(function(data){
+			if (!data) return;
+			if (!data._id) return;
+			res.send(data._id);
+		})
+	}else{
+		if(req.session.profile){
+
+		}else{
+			res.send({error:400})
+			return;
+		}
+		res.send(req.session.profile.id);
+	}
+})
+
+Server.get("/wordplus", function(req, res){
+	var word = req.query.word
+	var theme = req.query.theme
+
+	Bot.wordplus(req.query.id,word.split(",").join("\n"),theme);
+
+	JLog.log("단어 요청 접수.");
+});
+Server.get("/report", function(req, res){
+	var id = req.query.id
+	var reportid = req.query.reportid;
+	var reason = req.query.reason;
+
+	Bot.report(reportid,id,reason);
+	JLog.info("신고 접수 ID : " + id + "신고 대상 ID : "+reportid+" REASON : " + reason);
+})
 Server.get("/box", function(req, res){
 	if(req.session.profile){
 		/*if(Const.ADMIN.indexOf(req.session.profile.id) == -1){
@@ -70,6 +105,15 @@ Server.get("/help", function(req, res){
 		'KO_INJEONG': Const.KO_INJEONG
 	});
 });
+Server.get("/warn", function(req, res){
+	if(!req.query.id) return;
+	var id = req.query.id;
+	MainDB.users.findOne([ '_id', id]).on(function(data){
+		if(!data) return;
+		if(!data.warn) return;
+		res.send(data.warn);
+	})
+})
 Server.get("/ranking", function(req, res){
 	var pg = Number(req.query.p);
 	var id = req.query.id;

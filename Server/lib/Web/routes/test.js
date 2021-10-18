@@ -1,7 +1,12 @@
 var fs = require("fs");
 
-const list = "대한민국\n민주주의";
-const listsplit = list.split(/[,\r\n]+/)
-console.log(listsplit);
-console.log(listsplit.join("\n"))
-
+fs.readdir("../../../../log/report", (error, files) => {
+   if (error){
+      console.error(error);
+      return;
+   };
+   files.forEach((file) => {
+      var fileset = fs.readFileSync("../../../../log/report/" + file, 'utf-8');
+      console.log(fileset);
+})
+});

@@ -38,7 +38,8 @@ var OPTIONS;
 var MAX_LEVEL = 360;
 var TICK = 30;
 var EXP = [];
-var BAD = new RegExp([ "느으*[^가-힣]*금마?", "니[^가-힣]*(엄|앰|엠)", "(ㅄ|ㅅㅂ|ㅂㅅ)", "미친(년|놈)?", "(병|븅|빙)[^가-힣]*신", "보[^가-힣]*지", "(새|섀|쌔|썌)[^가-힣]*(기|끼)", "섹[^가-힣]*스", "(시|씨|쉬|쒸)이*입?[^가-힣]*(발|빨|벌|뻘|팔|펄)", "십[^가-힣]*새", "씹", "(애|에)[^가-힣]*미", "자[^가-힣]*지", "존[^가-힣]*나", "좆|죶", "지랄", "창[^가-힣]*(녀|년|놈)", "fuck", "sex" ].join('|'), "g");
+var BAD = new RegExp([ "느으*[^가-힣]*금마?", "니[^가-힣]*(엄|앰|엠)", "(ㅄ|ㅅㅂ|ㅂㅅ)", "미친[^가-힣](년|놈|개)?", "(병|븅|빙|등)[^가-힣]*(신|딱)", "보[^가-힣]*지", "(새|섀|쌔|썌)[^가-힣]*(기|끼)", "섹[^가-힣]*스", "(시|씨|쉬|쒸)이*입?[^가-힣]*(발|빨|벌|뻘|팔|펄)", "십[^가-힣]*새", "(애|에)[^가-힣]*미", "자[^가-힣]*지", "(졸|존)[^가-힣]*(나|라|만)","좃|좆|죶", "지랄", "창[^가-힣]*(녀|년|놈)", "개[^가-힣]*(년|녀|쓰레기|스레기|돼지|되지|초딩)", "나가[^가-힝]*(뒤져|디져|죽어)","(닥|닭)[^가-힣]*(쳐|처)", "(또|똘)[^가-힣]*(아이|라이)","빡(통대가리|대가리)", "썩을", "(fuck|뻑큐|뻐큐)", "(부|브|불)[^가-힣]*(알|랄)","씹", "십[^가-힣]*(년|놈)" , "아가리[^가-힣]*?","(엠|엄)[^가-힣]*창","(짱|장)[^가-힣]*(깨|꼴라|궤)","(찐|왕)[^가-힣]*(따|다)", "틀딱", "페[^가-힣]*미", "한남",  "(염|옘)[^가-힣]*병", "sex" ].join('|'), "g");
+
 
 var ws, rws;
 var $stage;
@@ -81,7 +82,7 @@ $(document).ready(function(){
 	$data.NICKNAME_LIMIT.REGEX.unshift(null);
 	$data.NICKNAME_LIMIT.REGEX = new (Function.prototype.bind.apply(RegExp, $data.NICKNAME_LIMIT.REGEX));
 	$data.version = $("#version").html();
-	$data.server = location.href.match(/\?.*server=(\d+)/)[1];
+	$data.server = location.href.match(/\?.*server=(\d+)/)[3];
 	$data.shop = {};
 	$data._okg = 0;
 	$data._playTime = 0;
@@ -162,6 +163,8 @@ $(document).ready(function(){
 				profileKick: $("#profile-kick"),
 				profileLevel: $("#profile-level"),
 				profileDress: $("#profile-dress"),
+				profilewarn: $("#profile-warn"),
+				profilereport: $("#profile-report"),
 				profileWhisper: $("#profile-whisper"),
 			kickVote: $("#KickVoteDiag"),
 				kickVoteY: $("#kick-vote-yes"),
@@ -177,6 +180,9 @@ $(document).ready(function(){
 				lbNext: $("#lb-next"),
 				lbMe: $("#lb-me"),
 				lbPrev: $("#lb-prev"),
+			warn: $("#warnDiag"),
+			report: $("#ReportDiag"),
+				reportOk: $("#report-button"),
 			dress: $("#DressDiag"),
 				dressOK: $("#dress-ok"),
 			charFactory: $("#CharFactoryDiag"),
@@ -223,7 +229,7 @@ $(document).ready(function(){
 	}
 	$data._soundList = [
 		{ key: "k", value: "/media/kkutu/k.mp3" },
-		{ key: "lobby", value: "/media/kkutu/LobbyBGM.mp3" },
+		{ key: "lobby", value: "/media/kkutu/Bells1 attack_kkutu.wav" },
 		{ key: "jaqwi", value: "/media/kkutu/JaqwiBGM.mp3" },
 		{ key: "jaqwiF", value: "/media/kkutu/JaqwiFastBGM.mp3" },
 		{ key: "game_start", value: "/media/kkutu/game_start.mp3" },
@@ -322,7 +328,10 @@ $(document).ready(function(){
 	});
 	$data.opts = $.cookie('kks');
 	if($data.opts){
-		applyOptions(JSON.parse($data.opts));
+		var opts = JSON.parse($data.opts);
+		opts.bv = $("#bgm-volume").val();
+		opts.ev = $("#effect-volume").val();
+		applyOptions(opts);
 	}
 	$(".dialog-head .dialog-title").on('mousedown', function(e){
 		var $pd = $(e.currentTarget).parents(".dialog");
@@ -680,8 +689,8 @@ $(document).ready(function(){
 	});
 	$stage.dialog.settingOK.on('click', function(e){
 		applyOptions({
-			mb: $("#mute-bgm").is(":checked"),
-			me: $("#mute-effect").is(":checked"),
+			bv: $("#bgm-volume").val(),
+			ev: $("#effect-volume").val(),
 			di: $("#deny-invite").is(":checked"),
 			dw: $("#deny-whisper").is(":checked"),
 			df: $("#deny-friend").is(":checked"),
@@ -728,6 +737,9 @@ $(document).ready(function(){
 		});
 		$stage.dialog.room.hide();
 	});
+	$stage.dialog.profilereport.on('click', function(e){
+		showDialog($stage.dialog.report);
+	})
 	$stage.dialog.resultOK.on('click', function(e){
 		if($data._resultPage == 1 && $data._resultRank){
 			drawRanking($data._resultRank[$data.id]);
@@ -795,16 +807,10 @@ $(document).ready(function(){
 		});
 	}).hotkey($("#dict-input"), 13);
 	$stage.dialog.wordPlusOK.on('click', function(e){
-		var t;
-		if($stage.dialog.wordPlusOK.hasClass("searching")) return;
-		if(!(t = $("#wp-input").val())) return;
-		t = t.replace(/[^a-z가-힣]/g, "");
-		if(t.length < 2) return;
-		
-		$("#wp-input").val("");
-		$(e.currentTarget).addClass("searching").html("<i class='fa fa-spin fa-spinner'></i>");
-		send('wp', { value: t });
-	}).hotkey($("#wp-input"), 13);
+		var theme = $("#wp-theme").val();
+		var list = $("#wp-input").val().split(/[,\r\n]+/);
+		$.get("/wordplus?id="+$data.users[$data.id].id+"&theme="+theme+"&word="+list);
+	});
 	$stage.dialog.inviteRobot.on('click', function(e){
 		requestInvite("AI");
 	});
@@ -839,11 +845,27 @@ $(document).ready(function(){
 		if($data._gaming) return fail(438);
 		if(showDialog($stage.dialog.dress)) $.get("/box", function(res){
 			if(res.error) return fail(res.error);
-			
 			$data.box = res;
 			drawMyDress();
 		});
 	});
+	$stage.dialog.profilewarn.on('click', function(e){
+		if($data.guest) return fail(421);
+		if($data._gaming) return fail(438);
+		if(showDialog($stage.dialog.warn))
+			$.get("/warn?id=" + $data.id, function(res){
+				if(res.error) return fail(res.error);
+				$("#dress-warn").val(res + "회");
+		})
+	})
+	$stage.dialog.reportOk.on('click', function(e){
+		if($data.guest) return;
+		var o = $data.users[$data._profiled];
+			$.get("/report?id="+$data.users[$data.id].id+"&reportid="+o.id+"&reason="+$("#report-input").val(), function(res){
+				if(res.error) return fail(res.error);
+				alert("신고 완료.")
+			})
+	})
 	$stage.dialog.dressOK.on('click', function(e){
 
 		$(e.currentTarget).attr('disabled', true);
@@ -1961,11 +1983,11 @@ function showDialog($d, noToggle){
 function applyOptions(opt){
 	$data.opts = opt;
 	
-	$data.muteBGM = $data.opts.mb;
-	$data.muteEff = $data.opts.me;
+	$data.BGMVolume = parseFloat($data.opts.bv);
+	$data.EffectVolume = parseFloat($data.opts.ev);
 	
-	$("#mute-bgm").attr('checked', $data.muteBGM);
-	$("#mute-effect").attr('checked', $data.muteEff);
+	$("#bgm-volume").val($data.BGMVolume);
+	$("#effect-volume").val($data.EffectVolume);
 	$("#deny-invite").attr('checked', $data.opts.di);
 	$("#deny-whisper").attr('checked', $data.opts.dw);
 	$("#deny-friend").attr('checked', $data.opts.df);
@@ -1975,11 +1997,11 @@ function applyOptions(opt){
 	$("#only-unlock").attr('checked', $data.opts.ou);
 	
 	if($data.bgm){
-		if($data.muteBGM){
+		if($data.BGMVolume == 0){
 			$data.bgm.volume = 0;
 			$data.bgm.stop();
 		}else{
-			$data.bgm.volume = 1;
+			$data.bgm.volume = $data.BGMVolume;
 			$data.bgm = playBGM($data.bgm.key, true);
 		}
 	}
@@ -2137,7 +2159,6 @@ function onMessage(data){
 			$data._gaming = false;
 			$data.box = data.box;
 			notice(L['welcomenotice'])
-			if($data.guest) notice(L['welcomeguest'])
 			if(location.hash[1]) tryJoin(location.hash.slice(1));
 			updateUI(undefined, true);
 			welcome();
@@ -2531,6 +2552,13 @@ function runCommand(cmd){
 				notice(L['myId'] + $data.id);
 			}
 			break;
+			case "/warn":
+			case "/경고":
+				if($data.guest) return;
+				$.get("/warn?=" + $data.id, function(res){
+					notice(L['warnCount'] + res)
+				});
+					break;
 		default:
 			for(i in CMD) notice(CMD[i], i);
 			break;
@@ -2901,6 +2929,9 @@ function userListBar(o, forInvite){
 function addonNickname($R, o){
 	if(o.equip['NIK']) $R.addClass("x-" + o.equip['NIK']);
 	if(o.equip['BDG'] == "b1_gm") $R.addClass("x-gm");
+	if(o.equip['BDG'] == "word_gm") $R.addClass("word-gm");
+	if(o.equip['BDG'] == "user_gm") $R.addClass("user-gm");
+	if(o.equip['BDG'] == "set_gm") $R.addClass("set-gm");
 }
 function updateRoomList(refresh){
 	var i;
@@ -3171,6 +3202,9 @@ function drawMyDress(avGroup){
 	$("#dress-exordial").val(my.exordial);
 	drawMyGoods(avGroup || true);
 }
+function idCopy() {
+	$("#dress-ipcopy").val($data.id)
+}
 function renderGoods($target, preId, filter, equip, onClick){
 	var $item;
 	var list = [];
@@ -3233,6 +3267,7 @@ function drawMyGoods(avGroup){
 				$data.users[$data.id].money = res.money;
 				
 				drawMyDress($data._avGroup);
+				idCopy();
 				updateUI(false);
 			});
 		}else if(AVAIL_EQUIP.indexOf(item.group) != -1){
@@ -3251,6 +3286,7 @@ function drawMyGoods(avGroup){
 				send('refresh');
 				
 				drawMyDress($data._avGroup);
+				idCopy()
 				updateMe();
 			});
 		}
@@ -3270,6 +3306,7 @@ function requestEquip(id, isLeft){
 			my.equip = res.equip;
 			
 			drawMyDress($data._avGroup);
+			idCopy();
 			send('refresh');
 			updateUI(false);
 		});
@@ -3528,13 +3565,19 @@ function requestProfile(id){
 	$stage.dialog.profileKick.hide();
 	$stage.dialog.profileShut.hide();
 	$stage.dialog.profileDress.hide();
+	$stage.dialog.profilewarn.hide();
+	$stage.dialog.profilereport.hide();
 	$stage.dialog.profileWhisper.hide();
 	$stage.dialog.profileHandover.hide();
 	
-	if($data.id == id) $stage.dialog.profileDress.show();
+	if($data.id == id) {
+		$stage.dialog.profileDress.show();
+		$stage.dialog.profilewarn.show();
+	}
 	else if(!o.robot){
 		$stage.dialog.profileShut.show();
 		$stage.dialog.profileWhisper.show();
+		$stage.dialog.profilereport.show();
 	}
 	if($data.room){
 		if($data.id != id && $data.id == $data.room.master){
@@ -4530,23 +4573,27 @@ function stopBGM(){
 }
 function playSound(key, loop){
 	var src, sound;
-	var mute = (loop && $data.muteBGM) || (!loop && $data.muteEff);
+	var bgmMuted = loop && $data.BGMVolume == 0;
+	var effectMuted = !loop && $data.EffectVolume == 0;
 	
 	sound = $sound[key] || $sound.missing;
 	if(window.hasOwnProperty("AudioBuffer") && sound instanceof AudioBuffer){
+		var gainNode = audioContext.createGain();
 		src = audioContext.createBufferSource();
 		src.startedAt = audioContext.currentTime;
 		src.loop = loop;
-		if(mute){
+		if(bgmMuted || effectMuted){
+			gainNode.gain.value = 0;
 			src.buffer = audioContext.createBuffer(2, sound.length, audioContext.sampleRate);
 		}else{
+			gainNode.gain.value = (loop ? $data.BGMVolume : $data.EffectVolume) || 0.5;
 			src.buffer = sound;
 		}
 		src.connect(audioContext.destination);
 	}else{
 		if(sound.readyState) sound.audio.currentTime = 0;
 		sound.audio.loop = loop || false;
-		sound.audio.volume = mute ? 0 : 1;
+		sound.audio.volume = mute ? 0 : ((loop ? $data.BGMVolume : $data.EffectVolume) || 0.5);
 		src = sound;
 	}
 	if($_sound[key]) $_sound[key].stop();

@@ -17,8 +17,7 @@
  */
 
 var File	 = require("fs");
-var Bot   = require("../../Game/bot")
-var {encode,decode} = require("../../sub/security");
+var Bot   = require("../../Game/Botcluster");
 var MainDB	 = require("../db");
 var GLOBAL	 = require("../../sub/global.json");
 var JLog	 = require("../../sub/jjlog");
@@ -41,6 +40,12 @@ Server.get("/admin_word", function(req, res){
 	req.session.admin = true;
 	page(req, res, "admin_word");
 });
+Server.get("/admin_design", function(req,res) {
+	if(!checkAdmin(req, res, "design")) return;
+	req.session.admin = true;
+
+	page(req, res, "admin_desion")
+})
 Server.get("/gwalli/injeong", function(req, res){
 	if(!checkAdmin(req, res, "word")) return;
 	
@@ -134,7 +139,7 @@ Server.get("/gwalli/kkutuhot", function(req, res){
 	});
 });
 Server.get("/gwalli/shop/:key", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "design")) return;
 	
 	var q = (req.params.key == "~ALL") ? undefined : [ '_id', req.params.key ];
 	
@@ -169,6 +174,7 @@ Server.post("/gwalli/injeong", function(req, res){
 	});
 	res.sendStatus(200);
 });
+// 끄투 DB 넣기.
 Server.post("/gwalli/kkutudb", onKKuTuDB);
 function onKKuTuDB(req, res){
 	if(!checkAdmin(req, res, "word")) return;
@@ -182,7 +188,7 @@ function onKKuTuDB(req, res){
 	if(!TABLE) return res.sendStatus(400);
 	if(!TABLE.insert) return res.sendStatus(400);
 	Bot.word("추가", list.join("\n"), theme);
-	var plusword_Log = encode(`\n\n단어 추가(${req.ip})\n주제 : \n${ko_KR.kkutu[`theme_${theme}`]}\n\n${list.join("\n")}`, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 256);
+	var plusword_Log = `\n\n단어 추가(${req.ip})\n주제 : \n${ko_KR.kkutu[`theme_${theme}`]}\n\n${list.join("\n")}`
 	File.appendFileSync("../log/word.log", plusword_Log, 'utf-8')
 	
 	noticeAdmin(req, theme, list.length);
@@ -207,6 +213,35 @@ function onKKuTuDB(req, res){
 	});
 	if(!req.body.nof) res.sendStatus(200);
 }
+Server.post("/gwalli/deletekkutudb", function(req, res){
+	if(!checkAdmin(req, res, "word")) return;
+	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
+	var TABLE = MainDB.kkutu[req.body.lang];
+	var list = req.body.list;
+	Bot.word("삭제", list, "(없음)")
+	if(list) list = list.split(/[,\r\n]+/);
+	else return res.sendStatus(400);
+	if(!TABLE) return res.sendStatus(400);
+	if(!TABLE.insert) return res.sendStatus(400);
+
+	list.forEach(function(item){
+		if(!item) return;
+		item = item.trim();
+		if(!item.length) return;
+
+		TABLE.findOne([ '_id', item]).on(function($doc){
+			if (!$doc) return;
+
+			if ($doc.theme.indexOf(theme) == -1){
+				JLog.warn(`Not word '${item}'`);
+				return;
+			}else{
+				TABLE.remove(['_id', item]).on();
+			}
+		})
+	});
+});
+// ip 불러오기
 Server.get("/gwalli/ip", function(req, res){
 	var ip_log = fs.readFileSync("../log/ip.log", "utf8")
 	if(req.query.pw != GLOBAL.PASS) return res.sendStatus(400);
@@ -221,6 +256,7 @@ Server.post("/gwalli/ip", function(req, res){
 	res.send(ip_log);
 
 });
+//유저 채팅 가지고 오기.
 Server.get("/gwalli/userchat", function(req, res){
 	if(req.query.pw != GLOBAL.PASS) return res.sendStatus(400);
 	var i = fs.readFileSync("../log/users/" + req.query.id + ".log", "utf8")
@@ -233,8 +269,9 @@ Server.post("/gwalli/userchat", function(req, res){
 	var i = fs.readFileSync("../log/users/" + req.query.id + ".log", "utf8")
 	
 	res.send(i);
-
 });
+
+// 끄투 db 다루기.
 Server.post("/gwalli/kkutudb/:word", function(req, res){
 	if(!checkAdmin(req, res, "word")) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
@@ -293,7 +330,7 @@ Server.post("/gwalli/users", function(req, res){
 	res.sendStatus(200);
 });
 Server.post("/gwalli/shop", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "design")) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
 	
 	var list = JSON.parse(req.body.list).list;

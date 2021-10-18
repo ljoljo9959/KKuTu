@@ -18,7 +18,7 @@
 
 var GLOBAL	 = require("./global.json");
 var JLog	 = require("./jjlog");
-var Bot = require("../Game/bot")
+var Bot = require("../Game/Botcluster")
 var Language = {
 	'ko_KR': require("../Web/lang/ko_KR.json"),
 	'en_US': require("../Web/lang/en_US.json")

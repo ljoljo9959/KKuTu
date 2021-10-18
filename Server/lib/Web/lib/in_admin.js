@@ -40,7 +40,11 @@
 				});
 			}
 		});
-	
+		$("#db-delete-ok").on('click', function(e){
+			$.post("/gwalli/deletekkutudb", {
+				list: $("#db-delete-list")
+			})
+		})
 	// 어인정 신청
 		$("#injeong-go").on('click', function(e){
 			$.get("/gwalli/injeong", function(res){
@@ -181,6 +185,8 @@
 						.append($("<td>").append(putter("ud-" + item._id + "-kkutu", 'l', JSON.stringify(item.kkutu || {}))))
 						.append($("<td>").append(putter("ud-" + item._id + "-box", 'l', JSON.stringify(item.box || {}))))
 						.append($("<td>").append(putter("ud-" + item._id + "-equip", 'l', JSON.stringify(item.equip || {}))))
+						.append($("<td>").append(putter("ud-" + item._id + "-nickname", 'g', item.nickname)))
+						.append($("<td>").append(putter("ud-" + item._id + "-nickChanged", 'g', item.nickChanged)))
 						.append($("<td>").append(putter("ud-" + item._id + "-exordial", 'g', item.exordial)))
 						.append($("<td>").append(putter("ud-" + item._id + "-server", 't', item.server)))
 						.append($("<td>").append(putter("ud-" + item._id + "-lastLogin", 't', item.lastLogin)))

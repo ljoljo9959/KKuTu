@@ -106,6 +106,8 @@ $(document).ready(function(){
 				profileKick: $("#profile-kick"),
 				profileLevel: $("#profile-level"),
 				profileDress: $("#profile-dress"),
+				profilewarn: $("#profile-warn"),
+				profilereport: $("#profile-report"),
 				profileWhisper: $("#profile-whisper"),
 			kickVote: $("#KickVoteDiag"),
 				kickVoteY: $("#kick-vote-yes"),
@@ -121,6 +123,9 @@ $(document).ready(function(){
 				lbNext: $("#lb-next"),
 				lbMe: $("#lb-me"),
 				lbPrev: $("#lb-prev"),
+			warn: $("#warnDiag"),
+			report: $("#ReportDiag"),
+				reportOk: $("#report-button"),
 			dress: $("#DressDiag"),
 				dressOK: $("#dress-ok"),
 			charFactory: $("#CharFactoryDiag"),
@@ -167,7 +172,7 @@ $(document).ready(function(){
 	}
 	$data._soundList = [
 		{ key: "k", value: "/media/kkutu/k.mp3" },
-		{ key: "lobby", value: "/media/kkutu/LobbyBGM.mp3" },
+		{ key: "lobby", value: "/media/kkutu/Bells1 attack_kkutu.wav" },
 		{ key: "jaqwi", value: "/media/kkutu/JaqwiBGM.mp3" },
 		{ key: "jaqwiF", value: "/media/kkutu/JaqwiFastBGM.mp3" },
 		{ key: "game_start", value: "/media/kkutu/game_start.mp3" },
@@ -266,7 +271,10 @@ $(document).ready(function(){
 	});
 	$data.opts = $.cookie('kks');
 	if($data.opts){
-		applyOptions(JSON.parse($data.opts));
+		var opts = JSON.parse($data.opts);
+		opts.bv = $("#bgm-volume").val();
+		opts.ev = $("#effect-volume").val();
+		applyOptions(opts);
 	}
 	$(".dialog-head .dialog-title").on('mousedown', function(e){
 		var $pd = $(e.currentTarget).parents(".dialog");
@@ -624,8 +632,8 @@ $(document).ready(function(){
 	});
 	$stage.dialog.settingOK.on('click', function(e){
 		applyOptions({
-			mb: $("#mute-bgm").is(":checked"),
-			me: $("#mute-effect").is(":checked"),
+			bv: $("#bgm-volume").val(),
+			ev: $("#effect-volume").val(),
 			di: $("#deny-invite").is(":checked"),
 			dw: $("#deny-whisper").is(":checked"),
 			df: $("#deny-friend").is(":checked"),
@@ -672,6 +680,9 @@ $(document).ready(function(){
 		});
 		$stage.dialog.room.hide();
 	});
+	$stage.dialog.profilereport.on('click', function(e){
+		showDialog($stage.dialog.report);
+	})
 	$stage.dialog.resultOK.on('click', function(e){
 		if($data._resultPage == 1 && $data._resultRank){
 			drawRanking($data._resultRank[$data.id]);
@@ -739,16 +750,10 @@ $(document).ready(function(){
 		});
 	}).hotkey($("#dict-input"), 13);
 	$stage.dialog.wordPlusOK.on('click', function(e){
-		var t;
-		if($stage.dialog.wordPlusOK.hasClass("searching")) return;
-		if(!(t = $("#wp-input").val())) return;
-		t = t.replace(/[^a-z가-힣]/g, "");
-		if(t.length < 2) return;
-		
-		$("#wp-input").val("");
-		$(e.currentTarget).addClass("searching").html("<i class='fa fa-spin fa-spinner'></i>");
-		send('wp', { value: t });
-	}).hotkey($("#wp-input"), 13);
+		var theme = $("#wp-theme").val();
+		var list = $("#wp-input").val().split(/[,\r\n]+/);
+		$.get("/wordplus?id="+$data.users[$data.id].id+"&theme="+theme+"&word="+list);
+	});
 	$stage.dialog.inviteRobot.on('click', function(e){
 		requestInvite("AI");
 	});
@@ -783,11 +788,27 @@ $(document).ready(function(){
 		if($data._gaming) return fail(438);
 		if(showDialog($stage.dialog.dress)) $.get("/box", function(res){
 			if(res.error) return fail(res.error);
-			
 			$data.box = res;
 			drawMyDress();
 		});
 	});
+	$stage.dialog.profilewarn.on('click', function(e){
+		if($data.guest) return fail(421);
+		if($data._gaming) return fail(438);
+		if(showDialog($stage.dialog.warn))
+			$.get("/warn?id=" + $data.id, function(res){
+				if(res.error) return fail(res.error);
+				$("#dress-warn").val(res + "회");
+		})
+	})
+	$stage.dialog.reportOk.on('click', function(e){
+		if($data.guest) return;
+		var o = $data.users[$data._profiled];
+			$.get("/report?id="+$data.users[$data.id].id+"&reportid="+o.id+"&reason="+$("#report-input").val(), function(res){
+				if(res.error) return fail(res.error);
+				alert("신고 완료.")
+			})
+	})
 	$stage.dialog.dressOK.on('click', function(e){
 
 		$(e.currentTarget).attr('disabled', true);

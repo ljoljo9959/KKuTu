@@ -21,14 +21,14 @@ var File = require('fs');
 var moment = require("moment");
 var WebSocket = require('ws');
 var https = require('https');
-var {encode} = require("../sub/security");
 var HTTPS_Server;
 // var Heapdump = require("heapdump");
 var KKuTu = require('./kkutu');
 var GLOBAL = require("../sub/global.json");
+
 var Const = require("../const");
 var JLog = require('../sub/jjlog');
-var Bot = require('./bot')
+var Bot = require('./Botcluster')
 var Secure = require('../sub/secure');
 var Recaptcha = require('../sub/recaptcha');
 
@@ -47,7 +47,7 @@ var WDIC = {};
 
 const DEVELOP = exports.DEVELOP = global.test || false;
 const GUEST_PERMISSION = exports.GUEST_PERMISSION = {
-	'create': true,
+	'create': false,
 	'enter': false,
 	'talk': false,
 	'practice': false,
@@ -57,7 +57,8 @@ const GUEST_PERMISSION = exports.GUEST_PERMISSION = {
 	'inviteRes': true,
 	'kick': false,
 	'kickVote': true,
-	'wp': true
+	'wp': true,
+	'join': false
 };
 const ENABLE_ROUND_TIME = exports.ENABLE_ROUND_TIME = [ 10, 30, 60, 90, 120, 150 ];
 const ENABLE_FORM = exports.ENABLE_FORM = [ "S", "J" ];
@@ -89,6 +90,12 @@ function processAdmin(id, value, name){
 				temp.socket.send('{"type":"error","code":410}');
 				temp.socket.close();
 			}
+			return null;
+		case "notice":
+			const [noticeId, text] = value.split(",")
+
+			if(!noticeId) return notice("not send")
+			DIC[noticeId].send('yell', { value: text})
 			return null;
 		case "tailroom":
 			if(temp = ROOM[value]){
@@ -162,6 +169,7 @@ function processAdmin(id, value, name){
 			try {
 				MainDB.users.update([ '_id', value ]).set([ 'black', null ], [ 'blockedUntil', 0 ]).on();								
 				JLog.info(`[Block] 사용자 #${value}(이)가 이용제한 해제 처리되었습니다.`);
+				Bot.ban("계정 정지 해제", value, "없음", "없음");
 			}catch(e){
 				processAdminErrorCallback(e, id);
 			}
@@ -170,11 +178,82 @@ function processAdmin(id, value, name){
 			try {
 				MainDB.ip_block.update([ '_id', value ]).set([ 'reasonBlocked', null ], [ 'ipBlockedUntil', 0 ]).on();								
 				JLog.info(`[Block] IP 주소 ${value}(이)가 이용제한 해제 처리되었습니다.`);
+				Bot.ban("아이피 정지 해제", value, "없음", "없음");
 			}catch(e){
 				processAdminErrorCallback(e, id);
 			}
 			return null;
 		/* Enhanced User Block System [E] */
+		case 'warn':
+			try{ // 오류 처리
+				var [warnId,warncount,reason] = value.split(",");
+				MainDB.users.findOne([ '_id', warnId]).on(function(data){ // 데이터 베이스 불러오기
+					if (!data) return JLog.warn("경고를 사용 하려다 master.js 에서 데이터가 없어 리턴됨.")
+					if (!data.nickname) return JLog.warn("경고를 사용 하려다 master.js 에서 닉네임이 없어 리턴됨.")
+					var warnCount = Number(warncount) // 넘버 형식으로 변환
+					var warn = Number(data.warn)
+					var count = Math.floor(warn + warnCount); // 계산.
+
+					if (!count){ // 경고가 없다먄
+						MainDB.users.update([ '_id', warnId]).set([ 'warn' , warnCount]).on();
+						JLog.success(`[WARN] ${warnId}(이)가 경고 ${count}회로 되었습니다.`);
+						Bot.ban("경고 추가",warnId,reason,warnCount+"회");
+						return;
+					}
+					if (count >= 4){ // 경고가 4이상이라면
+						MainDB.users.update([ '_id', warnId]).set([ 'warn' , count]).on();
+						MainDB.users.update([ '_id', warnId ]).set([ 'black', "경고 누적(자동 처리)" ]).on();
+						if(temp = DIC[warnId]){
+							temp.socket.send('{"type":"error","code":410}');
+							temp.socket.close();
+						}
+						Bot.ban("계정 정지", warnId, "경고 누적(자동 처리)");
+						
+						return;
+					};
+					
+					MainDB.users.update([ '_id', warnId]).set([ 'warn' , count]).on();
+					JLog.success(`[WARN] ${warnId}(이)가 경고 ${count}회 추가 되었습니다.`);
+					Bot.ban("경고",warnId,reason,count+"회")
+					if (temp = DIC[warnId]){
+						temp.send('yell', {value : `${data.nickname}`})
+					}
+				});
+			}catch(e){
+				JLog.log("에러 마스터 경고")
+			}
+			return null;
+		case "setwarn":
+			try{ // 오류 처리
+				const [warnId,warncount,reason] = value.split(",");
+				MainDB.users.findOne([ '_id', warnId]).on(function(data){ // 데이터 베이스 불러오기
+					if (!data) return JLog.warn("경고설정을 사용 하려다 master.js 에서 데이터가 없어 리턴됨.")
+					if (!data.nickname) return JLog.warn("경고설정을 사용 하려다 master.js 에서 닉네임이 없어 리턴됨.")
+					var warnCount = Number(warncount) // 넘버 형식으로 변환
+
+					if (warnCount >= 4){
+						MainDB.users.update([ '_id', warnId ]).set([ 'black', "경고 누적(자동 처리)" ]).on();
+						if(temp = DIC[warnId]){
+							temp.socket.send('{"type":"error","code":410}');
+							temp.socket.close();
+						};
+						Bot.ban("계정 정지", warnId, "경고 누적(자동 처리)");
+						
+						return;
+					};
+
+					MainDB.users.update([ '_id', warnId]).set([ 'warn' , warnCount]).on();
+					JLog.success(`[WARN] ${warnId}(이)가 경고 ${warnCount}회 설정 되었습니다.`);
+					Bot.ban("경고 설정",warnId,reason,warnCount+"회")
+				});
+			}catch(e){
+				JLog.log("에러 마스터 경고")
+			}
+			return null;
+		case "update":
+			File.writeFile("./lib/sub/global.json", (set) => {
+				GLOBAL = require("../../sub/global.json");
+			})
 	}
 	return value;
 }
@@ -395,7 +474,7 @@ exports.init = function(_SID, CHAN){
 					return;
 				}
 				if($c.guest){
-					if(SID != "0"){
+					if (!GUEST_PERMISSION.join){
 						$c.sendError(402);
 						$c.socket.close();
 						return;

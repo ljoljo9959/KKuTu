@@ -18,6 +18,9 @@
 
 extends layout
 
+block Subject
+	title= L('title')
+
 block CSS
 	link(rel='stylesheet', href='/css/in_game_kkutu.css')
 
@@ -28,10 +31,9 @@ block Middle
 		div(style='float: left; padding-left: 70px;')
 			h3#holder= L('title').replace(/\[.+?\]/g, "")
 			img#logo(src='/img/kkutu/short_logo.png')
-		div#menu-bar(style='float: right; margin-top: 150px;')
+		div#menu-bar(style='float: right; margin-top: 100px;')
 			a(target='_blank', href='/master.txt', style='background-color: #63A95B;')= L('dnsdudwjdcor')
 			a(target='_blank', href='//discord.gg/7SyMVfy9ud', style='background-color: #0100FF;')= "디스코드"
-			a(target='_blank', href='//blog.jjo.kr/', style='background-color: #4078DC;')= L('CREATOR')
 		div.jjoriping(style='margin-top: 40px;')
 			img.jjoObj.jjoEyeL(src='/img/jjoeyeL.png', style='left: -270px;')
 			img.jjoObj.jjoNose(src='/img/jjonose.png', style='left: -170px;')
@@ -39,7 +41,7 @@ block Middle
 			div.jjoDisplayBar(style='width: 325px; height: 85px;')
 				button#game-start.jjo-display= L('gameStart')
 		
-	div(style='float: right; margin-top: -120px; width: 50%;')
+	div(style='float: left; margin-top: -45px; width: 100%;')
 		div.server-list-box
 			h3.server-list-title
 				a#server-refresh
