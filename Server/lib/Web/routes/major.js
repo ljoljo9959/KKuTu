@@ -18,6 +18,8 @@
 
 var Web		 = require("request");
 var MainDB	 = require("../db");
+var Bot      = require("../../Game/bot");
+var GLOBAL	 = require("../../sub/global.json");
 var JLog	 = require("../../sub/jjlog");
 var Const	 = require("../../const");
 
@@ -48,6 +50,40 @@ function consume($user, key, value, force){
 
 exports.run = function(Server, page){
 
+Server.get("/idcopy", function(req, res){
+	if(req.query.name){
+		MainDB.users.findOne([ 'nickname' , req.query.name ]).on(function(data){
+			if (!data) return;
+			if (!data._id) return;
+			res.send(data._id);
+		})
+	}else{
+		if(req.session.profile){
+
+		}else{
+			res.send({error:400})
+			return;
+		}
+		res.send(req.session.profile.id);
+	}
+})
+
+Server.get("/wordplus", function(req, res){
+	var word = req.query.word
+	var theme = req.query.theme
+
+	Bot.wordplus(req.query.id,word.split(",").join("\n"),theme);
+
+	JLog.log("단어 요청 접수.");
+});
+Server.get("/report", function(req, res){
+	var id = req.query.id
+	var reportid = req.query.reportid;
+	var reason = req.query.reason;
+
+	Bot.report(reportid,id,reason);
+	JLog.info("신고 접수 ID : " + id + "신고 대상 ID : "+reportid+" REASON : " + reason);
+})
 Server.get("/box", function(req, res){
 	if(req.session.profile){
 		/*if(Const.ADMIN.indexOf(req.session.profile.id) == -1){
@@ -69,6 +105,15 @@ Server.get("/help", function(req, res){
 		'KO_INJEONG': Const.KO_INJEONG
 	});
 });
+Server.get("/warn", function(req, res){
+	if(!req.query.id) return;
+	var id = req.query.id;
+	MainDB.users.findOne([ '_id', id]).on(function(data){
+		if(!data) return;
+		if(!data.warn) return;
+		res.send(data.warn);
+	})
+})
 Server.get("/ranking", function(req, res){
 	var pg = Number(req.query.p);
 	var id = req.query.id;
@@ -121,15 +166,36 @@ Server.get("/shop", function(req, res){
 });
 
 // POST
-Server.post("/exordial", function(req, res){
-	var text = req.body.data || "";
+Server.post("/profile", function(req, res){
+	var nickname = req.body.nickname;
+	var exordial = req.body.exordial;
 	
-	if(req.session.profile){
-		text = text.slice(0, 100);
-		MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'exordial', text ]).on(function($res){
-			res.send({ text: text });
+	if (req.session.profile){
+	if(!Object.is(exordial, undefined)){
+		if(exordial.length > 100) exordial = exordial.slice(0, 100);
+		MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'exordial', exordial ]).on();
+	}
+
+	if(nickname){
+		if(nickname.length > 12) nickname = nickname.slice(0, 12);
+		MainDB.users.findOne([ 'nickname', nickname ]).on(function(data){
+			MainDB.users.findOne([ '_id', req.session.profile.id ]).on(function(requester){
+				var changedDate = new Date(Number(requester.nickChanged));
+				var now = Number(new Date());
+
+				changedDate.setDate(changedDate.getDate() + GLOBAL.NICKNAME_LIMIT.TERM);
+				if(GLOBAL.NICKNAME_LIMIT.TERM > 0 && now < Number(changedDate)) return res.send({ error: 457 });
+				if(data) return res.send({ error: 456 });
+
+				MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'nickname', nickname ], [ 'nickChanged', now ]).on();
+				MainDB.session.update([ '_id', req.session.id ]).set([ 'nickname', nickname ]).on();
+				return res.send({ result: 200 });
+			});
 		});
-	}else res.send({ error: 400 });
+	}
+
+	if(!nickname) return res.send({ result: 200 });
+}else return res.send({ error: 400 });
 });
 Server.post("/buy/:id", function(req, res){
 	if(req.session.profile){

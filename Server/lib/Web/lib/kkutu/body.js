@@ -64,11 +64,11 @@ function showDialog($d, noToggle){
 function applyOptions(opt){
 	$data.opts = opt;
 	
-	$data.muteBGM = $data.opts.mb;
-	$data.muteEff = $data.opts.me;
+	$data.BGMVolume = parseFloat($data.opts.bv);
+	$data.EffectVolume = parseFloat($data.opts.ev);
 	
-	$("#mute-bgm").attr('checked', $data.muteBGM);
-	$("#mute-effect").attr('checked', $data.muteEff);
+	$("#bgm-volume").val($data.BGMVolume);
+	$("#effect-volume").val($data.EffectVolume);
 	$("#deny-invite").attr('checked', $data.opts.di);
 	$("#deny-whisper").attr('checked', $data.opts.dw);
 	$("#deny-friend").attr('checked', $data.opts.df);
@@ -78,11 +78,11 @@ function applyOptions(opt){
 	$("#only-unlock").attr('checked', $data.opts.ou);
 	
 	if($data.bgm){
-		if($data.muteBGM){
+		if($data.BGMVolume == 0){
 			$data.bgm.volume = 0;
 			$data.bgm.stop();
 		}else{
-			$data.bgm.volume = 1;
+			$data.bgm.volume = $data.BGMVolume;
 			$data.bgm = playBGM($data.bgm.key, true);
 		}
 	}
@@ -235,9 +235,11 @@ function onMessage(data){
 			$data._friends = {};
 			$data._playTime = data.playTime;
 			$data._okg = data.okg;
+			$data.nickname = data.nickname;
+			$data.exordial = data.exordial;
 			$data._gaming = false;
 			$data.box = data.box;
-			if(data.test) alert(L['welcomeTestServer']);
+			notice(L['welcomenotice'])
 			if(location.hash[1]) tryJoin(location.hash.slice(1));
 			updateUI(undefined, true);
 			welcome();
@@ -349,6 +351,20 @@ function onMessage(data){
 				updateCommunity();
 			}
 			break;
+			case 'reloadData':
+				$data.id = data.id;
+				$data.admin = data.admin;
+				if(!$data._gaming) $data.users = data.users;
+				$data.rooms = data.rooms;
+				$data.friends = data.friends;
+				$data._playTime = data.playTime;
+				$data._okg = data.okg;
+				$data.nickname = data.nickname;
+				$data.exordial = data.exordial;
+				$data.box = data.box;
+				updateUI(undefined, true);
+				updateCommunity();
+				break;
 		case 'friendEdit':
 			$data.friends = data.friends;
 			updateCommunity();
@@ -539,6 +555,9 @@ function welcome(){
 	}, 2000);
 	
 	if($data.admin) console.log("관리자 모드");
+
+
+	isWelcome = true;
 }
 function getKickText(profile, vote){
 	var vv = L['agree'] + " " + vote.Y + ", " + L['disagree'] + " " + vote.N + L['kickCon'];
@@ -614,6 +633,13 @@ function runCommand(cmd){
 				notice(L['myId'] + $data.id);
 			}
 			break;
+			case "/warn":
+			case "/경고":
+				if($data.guest) return;
+				$.get("/warn?=" + $data.id, function(res){
+					notice(L['warnCount'] + res)
+				});
+					break;
 		default:
 			for(i in CMD) notice(CMD[i], i);
 			break;
@@ -984,6 +1010,9 @@ function userListBar(o, forInvite){
 function addonNickname($R, o){
 	if(o.equip['NIK']) $R.addClass("x-" + o.equip['NIK']);
 	if(o.equip['BDG'] == "b1_gm") $R.addClass("x-gm");
+	if(o.equip['BDG'] == "word_gm") $R.addClass("word-gm");
+	if(o.equip['BDG'] == "user_gm") $R.addClass("user-gm");
+	if(o.equip['BDG'] == "set_gm") $R.addClass("set-gm");
 }
 function updateRoomList(refresh){
 	var i;
@@ -1249,8 +1278,13 @@ function drawMyDress(avGroup){
 	renderMoremi($view, my.equip);
 	$(".dress-type.selected").removeClass("selected");
 	$("#dress-type-all").addClass("selected");
+	
+	$("#dress-nickname").val(my.nickname);
 	$("#dress-exordial").val(my.exordial);
 	drawMyGoods(avGroup || true);
+}
+function idCopy() {
+	$("#dress-ipcopy").val($data.id)
 }
 function renderGoods($target, preId, filter, equip, onClick){
 	var $item;
@@ -1314,6 +1348,7 @@ function drawMyGoods(avGroup){
 				$data.users[$data.id].money = res.money;
 				
 				drawMyDress($data._avGroup);
+				idCopy();
 				updateUI(false);
 			});
 		}else if(AVAIL_EQUIP.indexOf(item.group) != -1){
@@ -1332,6 +1367,7 @@ function drawMyGoods(avGroup){
 				send('refresh');
 				
 				drawMyDress($data._avGroup);
+				idCopy()
 				updateMe();
 			});
 		}
@@ -1351,6 +1387,7 @@ function requestEquip(id, isLeft){
 			my.equip = res.equip;
 			
 			drawMyDress($data._avGroup);
+			idCopy();
 			send('refresh');
 			updateUI(false);
 		});
@@ -1609,13 +1646,19 @@ function requestProfile(id){
 	$stage.dialog.profileKick.hide();
 	$stage.dialog.profileShut.hide();
 	$stage.dialog.profileDress.hide();
+	$stage.dialog.profilewarn.hide();
+	$stage.dialog.profilereport.hide();
 	$stage.dialog.profileWhisper.hide();
 	$stage.dialog.profileHandover.hide();
 	
-	if($data.id == id) $stage.dialog.profileDress.show();
+	if($data.id == id) {
+		$stage.dialog.profileDress.show();
+		$stage.dialog.profilewarn.show();
+	}
 	else if(!o.robot){
 		$stage.dialog.profileShut.show();
 		$stage.dialog.profileWhisper.show();
+		$stage.dialog.profilereport.show();
 	}
 	if($data.room){
 		if($data.id != id && $data.id == $data.room.master){
@@ -2611,23 +2654,27 @@ function stopBGM(){
 }
 function playSound(key, loop){
 	var src, sound;
-	var mute = (loop && $data.muteBGM) || (!loop && $data.muteEff);
+	var bgmMuted = loop && $data.BGMVolume == 0;
+	var effectMuted = !loop && $data.EffectVolume == 0;
 	
 	sound = $sound[key] || $sound.missing;
 	if(window.hasOwnProperty("AudioBuffer") && sound instanceof AudioBuffer){
+		var gainNode = audioContext.createGain();
 		src = audioContext.createBufferSource();
 		src.startedAt = audioContext.currentTime;
 		src.loop = loop;
-		if(mute){
+		if(bgmMuted || effectMuted){
+			gainNode.gain.value = 0;
 			src.buffer = audioContext.createBuffer(2, sound.length, audioContext.sampleRate);
 		}else{
+			gainNode.gain.value = (loop ? $data.BGMVolume : $data.EffectVolume) || 0.5;
 			src.buffer = sound;
 		}
 		src.connect(audioContext.destination);
 	}else{
 		if(sound.readyState) sound.audio.currentTime = 0;
 		sound.audio.loop = loop || false;
-		sound.audio.volume = mute ? 0 : 1;
+		sound.audio.volume = mute ? 0 : ((loop ? $data.BGMVolume : $data.EffectVolume) || 0.5);
 		src = sound;
 	}
 	if($_sound[key]) $_sound[key].stop();

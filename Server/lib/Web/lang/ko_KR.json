@@ -1,13 +1,15 @@
 {
 	"GLOBAL": {
-		"GPL": "<div style='color: #666;'>글자로 놀자! 끄투 온라인 Copyright (C) {년도} {배포자}({이메일 등})<br>이 프로그램은 제품에 대한 어떠한 형태의 보증도 제공되지 않습니다.<br>이 프로그램은 자유 소프트웨어이며 배포 규정을 만족시키는 조건 아래 자유롭게 재배포할 수 있습니다.<br>이에 대한 자세한 사항은 본 프로그램의 구현을 담은 다음 레포지토리에서 확인하십시오: <a target='_blank' href='{이 서버의 소스 코드 위치}'>{이 서버의 소스 코드 위치}</a></div>",
+		"GPL": "<font-family: 여기어때 잘난체;><div style='color: #666;'>글자로 놀자! 끄투 온라인 Copyright (C) <br>체리끄투는 채팅, 아이피 등을 수집하여 운영정책에 의거하여 조회 될 수 있습니다. (욕설 사용, 디도스 등으로 인해 조회 됩니다) <br>자세하게 포탈에 위치한 체리끄투 운영정책을 확인하세요!<br>  게임 접속시 자동으로 동의 하는 것으로 간주됩니다.<br>디도스 방지를 위해 600<br>2021 (TESTER) 이준원(포도맛사과) [godple13@kakao.cm]<br>이 프로그램은 제품에 대한 어떠한 형태의 보증도 제공되지 않습니다.<br>이 프로그램은 자유 소프트웨어이며 배포 규정을 만족시키는 조건 아래 자유롭게 재배포할 수 있습니다.<br>이에 대한 자세한 사항은 본 프로그램의 구현을 담은 다음 레포지토리에서 확인하십시오: https://github.com/ljoljo9959/KKuTu </div>",
 
 		"CREATOR":	"개발자 블로그",
 		"HOME":		"FA{home}",
-		"GAMES":	"게임",
-		"GAMES_KKUTU":	"끄투",
-		"GAMES_FATES":	"카드 뽑기",
+		"jehu":  "제휴서버",
+		"jehunkkutu" : "재현끄투",
+		"graykkutu" : "그레이끄투",
+		"KKUTU_LIST":	"끄투",
 		"GALLERY": "갤러리",
+		"dnsdudwjdcor": "운영정책",
 		"LEBS":		"LEBS",
 		"ETC":		"???",
 		"ETC_ABOUT":	"쪼롤이 뭐지",
@@ -120,6 +122,7 @@
 		"withLine": "라인 아이디로 로그인",
 		"withInstagram": "인스타그램 아이디로 로그인",
 		"withSpotify": "Spotify 아이디로 로그인",
+		"withAdmin": "관리자 로그인",
 		"login_kkutu": "글자로 놀자! 끄투 온라인을 이용하시려면 로그인을 해 주세요."
 	},
 	"loginfail": {
@@ -128,8 +131,8 @@
 		"login": "로그인"
 	},
 	"kkutu": {
-		"title": "글자로 놀자! 끄투 온라인",
-		"version": "2.5.1",
+		"title": "글자로 놀자! 체리끄투 온라인",
+		"version": "2.5.5",
 		
 		"meta_desc": "온라인 끝말잇기, 앞말잇기, 자음퀴즈, 십자말풀이, 타자 대결까지! 끄투에서 어휘력의 제왕이 되어 보세요.",
 		"meta_keys": "끄투,kkutu,끝말잇기,온라인,웹,쿵쿵따,영어끝말잇기,영어쿵쿵따,시리토리,끝말잇기사이트,자음퀴즈,초성퀴즈,자퀴,십자말풀이,가로세로,타자,타자연습,앞말잇기",
@@ -162,8 +165,6 @@
 		
 		"websocketUnsupport": "본 게임은 Internet Explorer(10), 크롬(16), 파이어폭스(11), 오페라(12.1), 사파리(6) 이상의 버전에서 지원합니다!<br>브라우저를 업데이트해 주세요.",
 		"dictionarySupport": "사전 정보 제공:<a href='http://wordnet.princeton.edu' target='_blank'>WordNet</a><br><label style='color: #777777;'>WordNet 3.0 Copyright 2006 by Princeton University. All rights reserved.</label>",
-		"sandbox": "샌드박스 :: SDBX",
-		"etcSupport": "도움:<a href='http://cafe.naver.com/sdbx' target='_blank'>샌드박스 :: SDBX</a>",
 		"welcome": "환영합니다.",
 		"welcomeTestServer": "테스트 서버에 접속했습니다. 본 서버는 특별한 공지 없이 폭발하거나 닫힐 수 있습니다.",
 		"loadRemain": "불러오는 중... 앞으로 ",
@@ -221,6 +222,8 @@
 		"error_453": "손님 계정을 친구로 추가할 수 없습니다.",
 		"error_454": "친구 추가 요청에 대한 응답을 기다리고 있습니다.",
 		"error_455": "접속해 있지 않은 친구만 삭제할 수 있습니다.",
+		"error_456": "중복되는 별명이 있습니다.",
+		"error_457": "최근에 이미 별명을 변경했습니다. 서버 주인이 설정한 기간 후 다시 변경할 수 있습니다.",
 		"error_500": "서버 점검 혹은 업데이트가 진행 중입니다.",
 		"error_555": "공사 중입니다! ㅠㅠ",
 		"turnError_402": "첫 턴 한방 금지",
@@ -340,8 +343,6 @@
 		"explSami": "세 글자 단어와 두 글자 단어를 번갈아가며 잇습니다.",
 		"optNo2": "2글자 금지",
 		"explNo2": "두 글자 단어의 사용을 막습니다.",
-		"optReturn": "리턴",
-		"explReturn": "사용했던 단어를 다시 사용할 수 있습니다.",
 		"hidden": "(미공개)",
 		"pickInjeong": "주제 선택",
 		"explInjPick": "게임에서 사용할 주제를 선택하세요.",
@@ -396,6 +397,7 @@
 		"theme_KMV": "한국 영화",
 		"theme_HDC": "함대 컬렉션",
 		"theme_HOS": "히어로즈 오브 더 스톰",
+		"theme_KKUTU": "끄투 프리서버",
 		
 		"class_1": "명",
 		"class_2": "대명",
@@ -488,6 +490,8 @@
 		"theme_1001": "나라 이름과 수도",
 		"jqTheme": "주제",
 		
+		"theme_notype": "주제가 존재 하지 않음",
+		
 		"class_n": "명",
 		"class_a": "형",
 		"class_s": "형",
@@ -537,8 +541,20 @@
 		"obtainExp": "경험치를 획득했습니다",
 		"obtainMoney": "핑을 획득했습니다",
 		"sureConsume": "정말 이 항목을 사용합니까?",
+		"report": "신고",
+		"reportX": "신고 내용 : ",
+		"reportOk": "완료",
 		
+		"nickChanged": "별명이 ",
+		"exorChanged": "소개말이 ",
+		"changed": "(으)로 변경되었습니다.",
+		"sureChangeNickLimit1": "정말 별명을 변경합니까? 변경 후 ",
+		"sureChangeNickLimit2": "일 간 다시 변경할 수 없습니다.",
+		"sureChangeNickNoLimit": "정말 별명을 변경합니까?",
+
 		"dress": "프로필 관리",
+		"myNickname": "별명",
+		"myNicknameX": "12글자 이내",
 		"myExordial": "소개 한마디",
 		"myExordialX": "100글자 이내",
 		"myMoremi": "내 모레미",
@@ -577,6 +593,8 @@
 		"cmd_id": "(/id <i>대상</i>) 대상의 식별 번호를 얻습니다.",
 		
 		"myId": "내 식별 번호: ",
+		"warnCount": "경고 횟수: ",
+		"warn": "경고",
 		"send": "전송",
 		"help": "FA{question-circle}",
 		"helpText": "도움말",
@@ -585,7 +603,7 @@
 		"community": "FA{comments}",
 		"communityText": "친구",
 		"bulletin": "FA{bullhorn}&nbsp;알립니다",
-		"leaderboard": "FA{trophy}&nbsp;랭킹",
+		"leaderboard": "FA{trophy}",
 		"nickname": "이름",
 		"spectate": "관전하기",
 		"mute": "음소거",
@@ -607,6 +625,8 @@
 		"nextPage": "다음",
 		"page": "페이지",
 		
+		"welcomenotice": "체리끄투는 채팅, 아이피 등을 *.log 파일로 끄투 접속시 자동 수집합니다. \n 이 파일은 욕설, 디도스 등 체리끄투의 안전성을 위해 조회, 사용됩니다.\n 이 파일은 마지막 수정일로 부터 2년이 지나면 자동으로 삭제됩니다.",
+		"welcomeguest": "게스트는 채팅, 방만들기, 게임시작 등 관전을 제외하여 모든것이 제한됩니다. \n만일 플레이를 하고 싶다면 로그인을 해주세요!",
 		"attemptFriendAdd": "님의 친구 추가 요청을 받았습니다. 수락합니까?",
 		"friendEditMemo": "이 친구에 대한 메모를 설정합니다. (최고 50자)",
 		"friendAddRes_ok": "님과 친구가 되었습니다.",
@@ -627,7 +647,7 @@
 		"invite": "초대",
 		"inviteRobot": "AI 초대",
 		"dict": "사전",
-		"wordPlus": "단어 추가",
+		"wordPlus": "단어 요청",
 		"chatLog": "대화 기록",
 		"notice": "알림",
 		"yell": "[공지]",

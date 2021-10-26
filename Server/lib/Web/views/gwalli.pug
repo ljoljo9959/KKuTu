@@ -102,6 +102,17 @@ block Middle
 						td 서버
 					tbody#gamsi-data
 	fieldset
+		legend IP 조회
+		div
+			textarea#iplist(rows=20, cols=100, placeholder="IP 정보", readonly)
+			button#iplistok 조회 
+	fieldset 
+		legend 채팅 조회
+		div
+			input#id-chat(placeholder="유저 아이디 [guest({ip})]")
+			textarea#list-chat(cols=50, rows=30, placeholder="채팅 정보", readonly)
+			button#ok-chat 조회 
+	fieldset
 		legend 끄투 DB 다루기
 		div
 			input#db-word(placeholder='단어')

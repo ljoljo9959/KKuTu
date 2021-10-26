@@ -23,7 +23,7 @@ DB.ready = function(){
 	var rank = 0;
 	var phit = 0;
 	
-	DB.kkutu['ko'].find([ 'hit', { $gt: 0 } ]).sort([ 'hit', -1 ]).limit(len).on(function($res){
+	DB.kkutu['ko'].find([ 'hit', { $gt: 0 } ]).sort([ 'hit', 5 ]).limit(len).on(function($res){
 		var i, $o, c;
 		var res = [];
 		

@@ -17,28 +17,44 @@
  */
 
 var File	 = require("fs");
+var Bot   = require("../../Game/Botcluster");
 var MainDB	 = require("../db");
 var GLOBAL	 = require("../../sub/global.json");
 var JLog	 = require("../../sub/jjlog");
 var Lizard	 = require("../../sub/lizard.js");
+var ko_KR = require("../lang/ko_KR.json")
+var fs = require("fs");
 
 exports.run = function(Server, page){
 
-Server.get("/gwalli", function(req, res){
-	if(!checkAdmin(req, res)) return;
+Server.get("/admin_user", function(req, res){
+	if(!checkAdmin(req, res, "user")) return;
 	
 	req.session.admin = true;
-	page(req, res, "gwalli");
+	page(req, res, "admin_user");
 });
+
+Server.get("/admin_word", function(req, res){
+	if(!checkAdmin(req, res, "word")) return;
+	
+	req.session.admin = true;
+	page(req, res, "admin_word");
+});
+Server.get("/admin_design", function(req,res) {
+	if(!checkAdmin(req, res, "design")) return;
+	req.session.admin = true;
+
+	page(req, res, "admin_desion")
+})
 Server.get("/gwalli/injeong", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "word")) return;
 	
 	MainDB.kkutu_injeong.find([ 'theme', { $not: "~" } ]).limit(100).on(function($list){
 		res.send({ list: $list });
 	});
 });
 Server.get("/gwalli/gamsi", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "word")) return;
 	
 	MainDB.users.findOne([ '_id', req.query.id ]).limit([ 'server', true ]).on(function($u){
 		if(!$u) return res.sendStatus(404);
@@ -51,7 +67,7 @@ Server.get("/gwalli/gamsi", function(req, res){
 	});
 });
 Server.get("/gwalli/users", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "user")) return;
 	
 	if(req.query.name){
 		MainDB.session.find([ 'profile.title', req.query.name ]).on(function($u){
@@ -90,7 +106,7 @@ Server.get("/gwalli/users", function(req, res){
 	}
 });
 Server.get("/gwalli/kkutudb/:word", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "word")) return;
 	
 	var TABLE = MainDB.kkutu[req.query.lang];
 	
@@ -101,7 +117,7 @@ Server.get("/gwalli/kkutudb/:word", function(req, res){
 	});
 });
 Server.get("/gwalli/kkututheme", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "word")) return;
 	
 	var TABLE = MainDB.kkutu[req.query.lang];
 	
@@ -112,7 +128,7 @@ Server.get("/gwalli/kkututheme", function(req, res){
 	});
 });
 Server.get("/gwalli/kkutuhot", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "word")) return;
 	
 	File.readFile(GLOBAL.KKUTUHOT_PATH, function(err, file){
 		var data = JSON.parse(file.toString());
@@ -123,7 +139,7 @@ Server.get("/gwalli/kkutuhot", function(req, res){
 	});
 });
 Server.get("/gwalli/shop/:key", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "design")) return;
 	
 	var q = (req.params.key == "~ALL") ? undefined : [ '_id', req.params.key ];
 	
@@ -134,7 +150,7 @@ Server.get("/gwalli/shop/:key", function(req, res){
 	});
 });
 Server.post("/gwalli/injeong", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "word")) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
 	
 	var list = JSON.parse(req.body.list).list;
@@ -158,19 +174,22 @@ Server.post("/gwalli/injeong", function(req, res){
 	});
 	res.sendStatus(200);
 });
+// 끄투 DB 넣기.
 Server.post("/gwalli/kkutudb", onKKuTuDB);
 function onKKuTuDB(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "word")) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
 	
 	var theme = req.body.theme;
 	var list = req.body.list;
 	var TABLE = MainDB.kkutu[req.body.lang];
-	
 	if(list) list = list.split(/[,\r\n]+/);
 	else return res.sendStatus(400);
 	if(!TABLE) return res.sendStatus(400);
 	if(!TABLE.insert) return res.sendStatus(400);
+	Bot.word("추가", list.join("\n"), theme);
+	var plusword_Log = `\n\n단어 추가(${req.ip})\n주제 : \n${ko_KR.kkutu[`theme_${theme}`]}\n\n${list.join("\n")}`
+	File.appendFileSync("../log/word.log", plusword_Log, 'utf-8')
 	
 	noticeAdmin(req, theme, list.length);
 	list.forEach(function(item){
@@ -194,8 +213,67 @@ function onKKuTuDB(req, res){
 	});
 	if(!req.body.nof) res.sendStatus(200);
 }
+Server.post("/gwalli/deletekkutudb", function(req, res){
+	if(!checkAdmin(req, res, "word")) return;
+	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
+	var TABLE = MainDB.kkutu[req.body.lang];
+	var list = req.body.list;
+	Bot.word("삭제", list, "(없음)")
+	if(list) list = list.split(/[,\r\n]+/);
+	else return res.sendStatus(400);
+	if(!TABLE) return res.sendStatus(400);
+	if(!TABLE.insert) return res.sendStatus(400);
+
+	list.forEach(function(item){
+		if(!item) return;
+		item = item.trim();
+		if(!item.length) return;
+
+		TABLE.findOne([ '_id', item]).on(function($doc){
+			if (!$doc) return;
+
+			if ($doc.theme.indexOf(theme) == -1){
+				JLog.warn(`Not word '${item}'`);
+				return;
+			}else{
+				TABLE.remove(['_id', item]).on();
+			}
+		})
+	});
+});
+// ip 불러오기
+Server.get("/gwalli/ip", function(req, res){
+	var ip_log = fs.readFileSync("../log/ip.log", "utf8")
+	if(req.query.pw != GLOBAL.PASS) return res.sendStatus(400);
+	if (!checkAdmin(req, res, "user")) return;
+	
+	res.send(ip_log);
+});
+Server.post("/gwalli/ip", function(req, res){
+	if (!checkAdmin(req, res, "user")) return;
+	var ip_log = fs.readFileSync("../log/ip.log", "utf8")
+	
+	res.send(ip_log);
+
+});
+//유저 채팅 가지고 오기.
+Server.get("/gwalli/userchat", function(req, res){
+	if(req.query.pw != GLOBAL.PASS) return res.sendStatus(400);
+	var i = fs.readFileSync("../log/users/" + req.query.id + ".log", "utf8")
+	if (!checkAdmin(req, res, "user")) return;
+	
+	res.send(i);
+});
+Server.post("/gwalli/userchat", function(req, res){
+	if (!checkAdmin(req, res, "user")) return;
+	var i = fs.readFileSync("../log/users/" + req.query.id + ".log", "utf8")
+	
+	res.send(i);
+});
+
+// 끄투 db 다루기.
 Server.post("/gwalli/kkutudb/:word", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "word")) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
 	var TABLE = MainDB.kkutu[req.body.lang];
 	var data = JSON.parse(req.body.data);
@@ -204,18 +282,26 @@ Server.post("/gwalli/kkutudb/:word", function(req, res){
 	if(!TABLE.upsert) return res.sendStatus(400);
 	
 	noticeAdmin(req, data._id);
+	var word = data._id
+	var theme = data.theme
+	var ko_KRtheme = ko_KR.kkutu[`theme_${theme}`]
 	if(data.mean == ""){
 		TABLE.remove([ '_id', data._id ]).on(function($res){
 			res.send($res.toString());
+			Bot.word("삭제", word, theme)
+			File.appendFileSync("../log/word.log", `\n\n단어 삭제(${req.ip})\n주제 없음.\n\n${word}}`, 'utf-8')
+
 		});
 	}else{
 		TABLE.upsert([ '_id', data._id ]).set([ 'flag', data.flag ], [ 'type', data.type ], [ 'theme', data.theme ], [ 'mean', data.mean ]).on(function($res){
 			res.send($res.toString());
+			Bot.word("수정", word, theme);
+			File.appendFileSync("../log/word.log", `\n\n단어 수정(${req.ip})\n주제 : ${ko_KRtheme}\n\n${word}` , 'utf-8')
 		});
 	}
 });
 Server.post("/gwalli/kkutuhot", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "word")) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
 	
 	noticeAdmin(req);
@@ -233,7 +319,7 @@ Server.post("/gwalli/kkutuhot", function(req, res){
 	});
 });
 Server.post("/gwalli/users", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "user")) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
 	
 	var list = JSON.parse(req.body.list).list;
@@ -244,7 +330,7 @@ Server.post("/gwalli/users", function(req, res){
 	res.sendStatus(200);
 });
 Server.post("/gwalli/shop", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, "design")) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
 	
 	var list = JSON.parse(req.body.list).list;
@@ -261,10 +347,10 @@ Server.post("/gwalli/shop", function(req, res){
 function noticeAdmin(req, ...args){
 	JLog.info(`[ADMIN] ${req.originalUrl} ${req.ip} | ${args.join(' | ')}`);
 }
-function checkAdmin(req, res){
+function checkAdmin(req, res, adminType){
 	if(global.isPublic){
 		if(req.session.profile){
-			if(GLOBAL.ADMIN.indexOf(req.session.profile.id) == -1){
+			if(GLOBAL.ADMIN[adminType].indexOf(req.session.profile.id) == -1){ // 정규식.
 				req.session.admin = false;
 				return res.send({ error: 400 }), false;
 			}

@@ -18,14 +18,17 @@
 
 var Cluster = require("cluster");
 var File = require('fs');
+var moment = require("moment");
 var WebSocket = require('ws');
 var https = require('https');
 var HTTPS_Server;
 // var Heapdump = require("heapdump");
 var KKuTu = require('./kkutu');
 var GLOBAL = require("../sub/global.json");
+
 var Const = require("../const");
 var JLog = require('../sub/jjlog');
+var Bot = require('./Botcluster')
 var Secure = require('../sub/secure');
 var Recaptcha = require('../sub/recaptcha');
 
@@ -44,17 +47,18 @@ var WDIC = {};
 
 const DEVELOP = exports.DEVELOP = global.test || false;
 const GUEST_PERMISSION = exports.GUEST_PERMISSION = {
-	'create': true,
-	'enter': true,
-	'talk': true,
-	'practice': true,
-	'ready': true,
-	'start': true,
-	'invite': true,
+	'create': false,
+	'enter': false,
+	'talk': false,
+	'practice': false,
+	'ready': false,
+	'start': false,
+	'invite': false,
 	'inviteRes': true,
-	'kick': true,
+	'kick': false,
 	'kickVote': true,
-	'wp': true
+	'wp': true,
+	'join': false
 };
 const ENABLE_ROUND_TIME = exports.ENABLE_ROUND_TIME = [ 10, 30, 60, 90, 120, 150 ];
 const ENABLE_FORM = exports.ENABLE_FORM = [ "S", "J" ];
@@ -69,7 +73,7 @@ process.on('uncaughtException', function(err){
 		console.log(text);
 	});
 });
-function processAdmin(id, value){
+function processAdmin(id, value, name){
 	var cmd, temp, i, j;
 	
 	value = value.replace(/^(#\w+\s+)?(.+)/, function(v, p1, p2){
@@ -79,12 +83,19 @@ function processAdmin(id, value){
 	switch(cmd){
 		case "yell":
 			KKuTu.publish('yell', { value: value });
+			Bot.notice(value,id,name)
 			return null;
 		case "kill":
 			if(temp = DIC[value]){
 				temp.socket.send('{"type":"error","code":410}');
 				temp.socket.close();
 			}
+			return null;
+		case "notice":
+			const [noticeId, text] = value.split(",")
+
+			if(!noticeId) return notice("not send")
+			DIC[noticeId].send('yell', { value: text})
 			return null;
 		case "tailroom":
 			if(temp = ROOM[value]){
@@ -122,8 +133,10 @@ function processAdmin(id, value){
 				var args = value.split(",");
 				if(args.length == 2){
 					MainDB.users.update([ '_id', args[0].trim() ]).set([ 'black', args[1].trim() ]).on();
+					Bot.ban("계정 정지",args[0].trim(),args[1].trim(),"기간 없음")
 				}else if(args.length == 3){
 					MainDB.users.update([ '_id', args[0].trim() ]).set([ 'black', args[1].trim() ], [ 'blockedUntil', addDate(parseInt(args[2].trim())) ]).on();				
+					Bot.ban("계정 정지",args[0].trim(),args[1].trim(),addDate(parseInt(args[2].trim())))
 				}else return null;
 				
 				JLog.info(`[Block] 사용자 #${args[0].trim()}(이)가 이용제한 처리되었습니다.`);
@@ -141,8 +154,10 @@ function processAdmin(id, value){
 				var args = value.split(",");
 				if(args.length == 2){
 					MainDB.ip_block.update([ '_id', args[0].trim() ]).set([ 'reasonBlocked', args[1].trim() ]).on();
+					Bot.ban("아이피 정지",args[0].trim(),args[1].trim(),"기간 없음");
 				}else if(args.length == 3){
-					MainDB.ip_block.update([ '_id', args[0].trim() ]).set([ 'reasonBlocked', args[1].trim() ], [ 'ipBlockedUntil', addDate(parseInt(args[2].trim())) ]).on();				
+					MainDB.ip_block.update([ '_id', args[0].trim() ]).set([ 'reasonBlocked', args[1].trim() ], [ 'ipBlockedUntil', addDate(parseInt(args[2].trim())) ]).on();			
+					Bot.ban("아이피 정지",args[0].trim(),args[1].trim(),addDate(parseInt(args[2].trim())))	
 				}else return null;
 				
 				JLog.info(`[Block] IP 주소 ${args[0].trim()}(이)가 이용제한 처리되었습니다.`);
@@ -154,6 +169,7 @@ function processAdmin(id, value){
 			try {
 				MainDB.users.update([ '_id', value ]).set([ 'black', null ], [ 'blockedUntil', 0 ]).on();								
 				JLog.info(`[Block] 사용자 #${value}(이)가 이용제한 해제 처리되었습니다.`);
+				Bot.ban("계정 정지 해제", value, "없음", "없음");
 			}catch(e){
 				processAdminErrorCallback(e, id);
 			}
@@ -162,11 +178,82 @@ function processAdmin(id, value){
 			try {
 				MainDB.ip_block.update([ '_id', value ]).set([ 'reasonBlocked', null ], [ 'ipBlockedUntil', 0 ]).on();								
 				JLog.info(`[Block] IP 주소 ${value}(이)가 이용제한 해제 처리되었습니다.`);
+				Bot.ban("아이피 정지 해제", value, "없음", "없음");
 			}catch(e){
 				processAdminErrorCallback(e, id);
 			}
 			return null;
 		/* Enhanced User Block System [E] */
+		case 'warn':
+			try{ // 오류 처리
+				var [warnId,warncount,reason] = value.split(",");
+				MainDB.users.findOne([ '_id', warnId]).on(function(data){ // 데이터 베이스 불러오기
+					if (!data) return JLog.warn("경고를 사용 하려다 master.js 에서 데이터가 없어 리턴됨.")
+					if (!data.nickname) return JLog.warn("경고를 사용 하려다 master.js 에서 닉네임이 없어 리턴됨.")
+					var warnCount = Number(warncount) // 넘버 형식으로 변환
+					var warn = Number(data.warn)
+					var count = Math.floor(warn + warnCount); // 계산.
+
+					if (!count){ // 경고가 없다먄
+						MainDB.users.update([ '_id', warnId]).set([ 'warn' , warnCount]).on();
+						JLog.success(`[WARN] ${warnId}(이)가 경고 ${count}회로 되었습니다.`);
+						Bot.ban("경고 추가",warnId,reason,warnCount+"회");
+						return;
+					}
+					if (count >= 4){ // 경고가 4이상이라면
+						MainDB.users.update([ '_id', warnId]).set([ 'warn' , count]).on();
+						MainDB.users.update([ '_id', warnId ]).set([ 'black', "경고 누적(자동 처리)" ]).on();
+						if(temp = DIC[warnId]){
+							temp.socket.send('{"type":"error","code":410}');
+							temp.socket.close();
+						}
+						Bot.ban("계정 정지", warnId, "경고 누적(자동 처리)");
+						
+						return;
+					};
+					
+					MainDB.users.update([ '_id', warnId]).set([ 'warn' , count]).on();
+					JLog.success(`[WARN] ${warnId}(이)가 경고 ${count}회 추가 되었습니다.`);
+					Bot.ban("경고",warnId,reason,count+"회")
+					if (temp = DIC[warnId]){
+						temp.send('yell', {value : `${data.nickname}`})
+					}
+				});
+			}catch(e){
+				JLog.log("에러 마스터 경고")
+			}
+			return null;
+		case "setwarn":
+			try{ // 오류 처리
+				const [warnId,warncount,reason] = value.split(",");
+				MainDB.users.findOne([ '_id', warnId]).on(function(data){ // 데이터 베이스 불러오기
+					if (!data) return JLog.warn("경고설정을 사용 하려다 master.js 에서 데이터가 없어 리턴됨.")
+					if (!data.nickname) return JLog.warn("경고설정을 사용 하려다 master.js 에서 닉네임이 없어 리턴됨.")
+					var warnCount = Number(warncount) // 넘버 형식으로 변환
+
+					if (warnCount >= 4){
+						MainDB.users.update([ '_id', warnId ]).set([ 'black', "경고 누적(자동 처리)" ]).on();
+						if(temp = DIC[warnId]){
+							temp.socket.send('{"type":"error","code":410}');
+							temp.socket.close();
+						};
+						Bot.ban("계정 정지", warnId, "경고 누적(자동 처리)");
+						
+						return;
+					};
+
+					MainDB.users.update([ '_id', warnId]).set([ 'warn' , warnCount]).on();
+					JLog.success(`[WARN] ${warnId}(이)가 경고 ${warnCount}회 설정 되었습니다.`);
+					Bot.ban("경고 설정",warnId,reason,warnCount+"회")
+				});
+			}catch(e){
+				JLog.log("에러 마스터 경고")
+			}
+			return null;
+		case "update":
+			File.writeFile("./lib/sub/global.json", (set) => {
+				GLOBAL = require("../../sub/global.json");
+			})
 	}
 	return value;
 }
@@ -222,7 +309,7 @@ Cluster.on('message', function(worker, msg){
 	
 	switch(msg.type){
 		case "admin":
-			if(DIC[msg.id] && DIC[msg.id].admin) processAdmin(msg.id, msg.value);
+			if(DIC[msg.id] && DIC[msg.id].admin) processAdmin(msg.id, msg.value, msg.name);
 			break;
 		case "tail-report":
 			if(temp = T_ROOM[msg.place]){
@@ -372,7 +459,7 @@ exports.init = function(_SID, CHAN){
 			}
 			MainDB.session.findOne([ '_id', key ]).limit([ 'profile', true ]).on(function($body){
 				$c = new KKuTu.Client(socket, $body ? $body.profile : null, key);
-				$c.admin = GLOBAL.ADMIN.indexOf($c.id) != -1;
+				$c.admin = GLOBAL.ADMIN.user.indexOf($c.id) != -1;
 				/* Enhanced User Block System [S] */
 				$c.remoteAddress = GLOBAL.USER_BLOCK_OPTIONS.USE_X_FORWARDED_FOR ? info.connection.remoteAddress : (info.headers['x-forwarded-for'] || info.connection.remoteAddress);
 				/* Enhanced User Block System [E] */
@@ -387,7 +474,7 @@ exports.init = function(_SID, CHAN){
 					return;
 				}
 				if($c.guest){
-					if(SID != "0"){
+					if (!GUEST_PERMISSION.join){
 						$c.sendError(402);
 						$c.socket.close();
 						return;
@@ -484,6 +571,8 @@ function joinNewUser($c) {
 		guest: $c.guest,
 		box: $c.box,
 		playTime: $c.data.playTime,
+		nickname: $c.nickname,
+		exordial: $c.exordial,
 		okg: $c.okgCount,
 		users: KKuTu.getUserList(),
 		rooms: KKuTu.getRoomList(),
@@ -495,7 +584,26 @@ function joinNewUser($c) {
 	narrateFriends($c.id, $c.friends, "on");
 	KKuTu.publish('conn', {user: $c.getData()});
 
+	setInterval(() => {
+		$c.send('reloadData', {
+			id: $c.id,
+			box: $c.box,
+			nickname: $c.nickname,
+			exordial: $c.exordial,
+			playTime: $c.data.playTime,
+			okg: $c.okgCount,
+			users: KKuTu.getUserList(),
+			rooms: KKuTu.getRoomList(),
+			friends: $c.friends,
+			admin: $c.admin
+		});
+	}, 18000);
+
 	JLog.info("New user #" + $c.id);
+
+	const thisDate = moment().format("MM-DD|HH:mm");
+	var iplog = `\nJoin: {${thisDate}}| [${$c.id}] | (${$c.remoteAddress.slice(7)})`
+	File.appendFileSync("../Log/ip.log",`${iplog}`, 'utf-8');
 }
 
 KKuTu.onClientMessage = function ($c, msg) {
@@ -535,9 +643,26 @@ function processClientRequest($c, msg) {
 
 			$c.publish('yell', {value: msg.value});
 			break;
+			case 'reloadData':
+				$c.send('reloadData', {
+					id: $c.id,
+					box: $c.box,
+					nickname: $c.nickname,
+					exordial: $c.exordial,
+					playTime: $c.data.playTime,
+					okg: $c.okgCount,
+					users: KKuTu.getUserList(),
+					rooms: KKuTu.getRoomList(),
+					friends: $c.friends,
+					admin: $c.admin
+				});
+				case 'bulkRefresh':
+					for(let i in DIC) DIC[i].refresh();
+					break;
 		case 'refresh':
 			$c.refresh();
 			break;
+
 		case 'talk':
 			if (!msg.value) return;
 			if (!msg.value.substr) return;
@@ -547,7 +672,7 @@ function processClientRequest($c, msg) {
 			}
 			msg.value = msg.value.substr(0, 200);
 			if ($c.admin) {
-				if (!processAdmin($c.id, msg.value)) break;
+				if (!processAdmin(msg.id, msg.value, msg.name)) break;
 			}
 			checkTailUser($c.id, $c.place, msg);
 			if (msg.whisper) {
@@ -579,7 +704,7 @@ function processClientRequest($c, msg) {
 			} else {
 				$c.sendError(450);
 			}
-			break;
+			break;x
 		case 'friendAddRes':
 			if (!(temp = DIC[msg.from])) return;
 			if (temp._friend != $c.id) return;
@@ -681,6 +806,8 @@ KKuTu.onClientClosed = function($c, code){
 	if($c.socket) $c.socket.removeAllListeners();
 	if($c.friends) narrateFriends($c.id, $c.friends, "off");
 	KKuTu.publish('disconn', { id: $c.id });
-
+	const thisDate = moment().format("MM-DD|HH:mm");
 	JLog.alert("Exit #" + $c.id);
+	var ip_log = `\nExit: {${thisDate}}| [${$c.id}] | (${$c.remoteAddress.slice(7)})`
+	File.appendFileSync("../Log/ip.log", `${ip_log}`, 'utf-8');
 };

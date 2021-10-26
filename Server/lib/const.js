@@ -18,7 +18,7 @@
 
 var GLOBAL = require("./sub/global.json");
 
-exports.KKUTU_MAX = 400;
+exports.KKUTU_MAX = 100;
 exports.MAIN_PORTS = GLOBAL.MAIN_PORTS;
 exports.TEST_PORT = 4040;
 exports.SPAM_CLEAR_DELAY = 1600;
@@ -27,9 +27,6 @@ exports.SPAM_LIMIT = 7;
 exports.BLOCKED_LENGTH = 10000;
 exports.KICK_BY_SPAM = 9;
 exports.MAX_OBSERVER = 4;
-exports.TESTER = GLOBAL.ADMIN.concat([
-	"Input tester id here"
-]);
 exports.IS_SECURED = GLOBAL.IS_SECURED;
 exports.SSL_OPTIONS = GLOBAL.SSL_OPTIONS;
 exports.OPTIONS = {
@@ -40,8 +37,7 @@ exports.OPTIONS = {
 	'prv': { name: "Proverb" },
 	'str': { name: "Strict" },
 	'k32': { name: "Sami" },
-	'no2': { name: "No2" },
-	'rtl': { name: "Return" }
+	'no2': { name: "No2" }
 };
 exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'lhand', 'rhand', 'front' ];
 exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back" ];
@@ -81,7 +77,7 @@ exports.RULE = {
 	},
 	'ESH': { lang: "en",
 		rule: "Classic",
-		opts: [ "ext", "mis", "rtl" ],
+		opts: [ "ext", "mis" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -97,7 +93,7 @@ exports.RULE = {
 	},
 	'KSH': { lang: "ko",
 		rule: "Classic",
-		opts: [ "man", "ext", "mis", "loa", "str", "rtl" ],
+		opts: [ "man", "ext", "mis", "loa", "str" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -154,7 +150,7 @@ exports.RULE = {
 	},
 	'KDA': { lang: "ko",
 		rule: "Daneo",
-		opts: [ "ijp", "mis", "rtl" ],
+		opts: [ "ijp", "mis" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -162,7 +158,7 @@ exports.RULE = {
 	},
 	'EDA': { lang: "en",
 		rule: "Daneo",
-		opts: [ "ijp", "mis", "rtl" ],
+		opts: [ "ijp", "mis" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -207,7 +203,7 @@ exports.KO_INJEONG = [
 	"MOB", "HYK", "CYP", "HRH", "STA", "OIJ",
 	"KGR", "ESB", "ELW", "OIM", "OVW", "NEX", /*"WOW",*/
 	"YRY", "KPO", "JLN", "JAN", "ZEL", "POK", "HAI",
-	"HSS", "KMV", "HDC", "HOS"
+	"HSS", "KMV", "HDC", "HOS", "KKUTU"
 ];
 exports.EN_INJEONG = [
 	"LOL"

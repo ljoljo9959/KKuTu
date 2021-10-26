@@ -18,6 +18,7 @@
 
 var GLOBAL	 = require("./global.json");
 var JLog	 = require("./jjlog");
+var Bot = require("../Game/Botcluster")
 var Language = {
 	'ko_KR': require("../Web/lang/ko_KR.json"),
 	'en_US': require("../Web/lang/en_US.json")
@@ -84,10 +85,11 @@ function page(req, res, file, data){
 	}
 	
 	JLog.log(`${addr.slice(7)}@${sid.slice(0, 10)} ${data.page}, ${JSON.stringify(req.params)}`);
+	Bot.page(addr.slice(7),sid.slice(0,10),data.page);
 	res.render(data.page, data, function(err, html){
 		if(err) res.send(err.toString());
 		else res.send(html);
-	});
+	})
 }
 exports.init = function(Server, shop){
 	Server.get("/language/:page/:lang", function(req, res){

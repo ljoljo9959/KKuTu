@@ -19,18 +19,11 @@
 	* Login 을 Passport 로 수행하기 위한 수정
 -
 	const MENU = [
-		{ key: 'HOME', href: "http://jjo.kr/" },
-		/*{ key: 'DB', sub: [
-			{ key: 'DB_CHAMP', href: "/db/champion" },
-			{ key: 'DB_ITEM', href: "/db/item" },
-			{ key: 'DB_RUNE', href: "/db/rune" },
-			{ key: 'DB_MASTERY', href: "/db/mastery" }
-		]},*/
-		{ key: 'GAMES', sub: [
-			{ key: 'GAMES_KKUTU', href: "/" },
-			{ key: 'GAMES_FATES', href: "http://jjo.kr/game/fates" }
-		]},
-		{ key: 'GALLERY', href: "http://jjo.kr/gallery" }
+		{ key: 'HOME', href: "http://cherrykkutu.duckdns.org/" },
+		{ key: "jehu", sub: [
+			{ key : 'jehunkkutu', href : "https://kkutu.lkke.xyz/"},
+			{ key : 'graykkutu', href : "https://kkutu.aut.kr/"}
+		]}
 	];
 	const PUBLIC = locals.published;
 	
@@ -66,9 +59,6 @@ mixin Menu()
 					div.menu-sub-separator
 					- for(j in MENU[i].sub)
 						div.menu-sub-btn(onclick='location.href = "'+MENU[i].sub[j].href+'";')!= L(MENU[i].sub[j].key)
-		div#quick-search
-			input#quick-search-tf(placeholder=L('QUICK_HOLDER'))
-			button#quick-search-btn!= L('QUICK_BTN')
 		div#account
 			span#profile= SESSION.profile ? JSON.stringify(SESSION.profile) : '{}'
 			div#account-info
@@ -81,9 +71,6 @@ mixin MMenu()
 			div.menu-sub-btn(onclick='location.href = "http://jjo.kr/";', style='margin: 7px 0px; height: 25px;')!= L('HOME')
 			div.menu-sub-btn(onclick='location.href = "http://kkutu.kr/";', style='margin: 7px 0px; height: 25px;')!= L('GAMES_KKUTU')
 			div.menu-sub-btn(onclick='location.href = "http://jjo.kr/gallery";', style='margin: 7px 0px; height: 25px;')!= L('GALLERY')
-		div#quick-search
-			input#quick-search-tf(placeholder=L('QUICK_HOLDER'))
-			button#quick-search-btn!= L('QUICK_BTN')
 		div#account
 			span#profile= SESSION.profile ? JSON.stringify(SESSION.profile) : '{}'
 			div#account-info
@@ -116,6 +103,7 @@ mixin PageHead(min)
 		block
 	link(rel='stylesheet', href='/css/in_'+locals.page.replace("/", "_")+'.css')
 	script(type='text/javascript', src='/js/in_'+locals.page.replace("/", "_")+'.min.js')
+	script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2822636577290715" crossorigin="anonymous"
 	
 mixin SearchBox(arg1, arg2)
 	meta(name='description', content=L('meta_desc', arg1, arg2))

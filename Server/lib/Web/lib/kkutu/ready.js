@@ -21,6 +21,9 @@ $(document).ready(function(){
 	
 	$data.PUBLIC = $("#PUBLIC").html() == "true";
 	$data.URL = $("#URL").html();
+	$data.NICKNAME_LIMIT = JSON.parse($("#NICKNAME_LIMIT").text());
+	$data.NICKNAME_LIMIT.REGEX.unshift(null);
+	$data.NICKNAME_LIMIT.REGEX = new (Function.prototype.bind.apply(RegExp, $data.NICKNAME_LIMIT.REGEX));
 	$data.version = $("#version").html();
 	$data.server = location.href.match(/\?.*server=(\d+)/)[1];
 	$data.shop = {};
@@ -103,6 +106,8 @@ $(document).ready(function(){
 				profileKick: $("#profile-kick"),
 				profileLevel: $("#profile-level"),
 				profileDress: $("#profile-dress"),
+				profilewarn: $("#profile-warn"),
+				profilereport: $("#profile-report"),
 				profileWhisper: $("#profile-whisper"),
 			kickVote: $("#KickVoteDiag"),
 				kickVoteY: $("#kick-vote-yes"),
@@ -118,6 +123,9 @@ $(document).ready(function(){
 				lbNext: $("#lb-next"),
 				lbMe: $("#lb-me"),
 				lbPrev: $("#lb-prev"),
+			warn: $("#warnDiag"),
+			report: $("#ReportDiag"),
+				reportOk: $("#report-button"),
 			dress: $("#DressDiag"),
 				dressOK: $("#dress-ok"),
 			charFactory: $("#CharFactoryDiag"),
@@ -164,7 +172,7 @@ $(document).ready(function(){
 	}
 	$data._soundList = [
 		{ key: "k", value: "/media/kkutu/k.mp3" },
-		{ key: "lobby", value: "/media/kkutu/LobbyBGM.mp3" },
+		{ key: "lobby", value: "/media/kkutu/Bells1 attack_kkutu.wav" },
 		{ key: "jaqwi", value: "/media/kkutu/JaqwiBGM.mp3" },
 		{ key: "jaqwiF", value: "/media/kkutu/JaqwiFastBGM.mp3" },
 		{ key: "game_start", value: "/media/kkutu/game_start.mp3" },
@@ -263,7 +271,10 @@ $(document).ready(function(){
 	});
 	$data.opts = $.cookie('kks');
 	if($data.opts){
-		applyOptions(JSON.parse($data.opts));
+		var opts = JSON.parse($data.opts);
+		opts.bv = $("#bgm-volume").val();
+		opts.ev = $("#effect-volume").val();
+		applyOptions(opts);
 	}
 	$(".dialog-head .dialog-title").on('mousedown', function(e){
 		var $pd = $(e.currentTarget).parents(".dialog");
@@ -621,8 +632,8 @@ $(document).ready(function(){
 	});
 	$stage.dialog.settingOK.on('click', function(e){
 		applyOptions({
-			mb: $("#mute-bgm").is(":checked"),
-			me: $("#mute-effect").is(":checked"),
+			bv: $("#bgm-volume").val(),
+			ev: $("#effect-volume").val(),
 			di: $("#deny-invite").is(":checked"),
 			dw: $("#deny-whisper").is(":checked"),
 			df: $("#deny-friend").is(":checked"),
@@ -669,6 +680,9 @@ $(document).ready(function(){
 		});
 		$stage.dialog.room.hide();
 	});
+	$stage.dialog.profilereport.on('click', function(e){
+		showDialog($stage.dialog.report);
+	})
 	$stage.dialog.resultOK.on('click', function(e){
 		if($data._resultPage == 1 && $data._resultRank){
 			drawRanking($data._resultRank[$data.id]);
@@ -736,16 +750,10 @@ $(document).ready(function(){
 		});
 	}).hotkey($("#dict-input"), 13);
 	$stage.dialog.wordPlusOK.on('click', function(e){
-		var t;
-		if($stage.dialog.wordPlusOK.hasClass("searching")) return;
-		if(!(t = $("#wp-input").val())) return;
-		t = t.replace(/[^a-z가-힣]/g, "");
-		if(t.length < 2) return;
-		
-		$("#wp-input").val("");
-		$(e.currentTarget).addClass("searching").html("<i class='fa fa-spin fa-spinner'></i>");
-		send('wp', { value: t });
-	}).hotkey($("#wp-input"), 13);
+		var theme = $("#wp-theme").val();
+		var list = $("#wp-input").val().split(/[,\r\n]+/);
+		$.get("/wordplus?id="+$data.users[$data.id].id+"&theme="+theme+"&word="+list);
+	});
 	$stage.dialog.inviteRobot.on('click', function(e){
 		requestInvite("AI");
 	});
@@ -780,20 +788,55 @@ $(document).ready(function(){
 		if($data._gaming) return fail(438);
 		if(showDialog($stage.dialog.dress)) $.get("/box", function(res){
 			if(res.error) return fail(res.error);
-			
 			$data.box = res;
 			drawMyDress();
 		});
 	});
+	$stage.dialog.profilewarn.on('click', function(e){
+		if($data.guest) return fail(421);
+		if($data._gaming) return fail(438);
+		if(showDialog($stage.dialog.warn))
+			$.get("/warn?id=" + $data.id, function(res){
+				if(res.error) return fail(res.error);
+				$("#dress-warn").val(res + "회");
+		})
+	})
+	$stage.dialog.reportOk.on('click', function(e){
+		if($data.guest) return;
+		var o = $data.users[$data._profiled];
+			$.get("/report?id="+$data.users[$data.id].id+"&reportid="+o.id+"&reason="+$("#report-input").val(), function(res){
+				if(res.error) return fail(res.error);
+				alert("신고 완료.")
+			})
+	})
 	$stage.dialog.dressOK.on('click', function(e){
+
 		$(e.currentTarget).attr('disabled', true);
-		$.post("/exordial", { data: $("#dress-exordial").val() }, function(res){
-			$stage.dialog.dressOK.attr('disabled', false);
-			if(res.error) return fail(res.error);
-			
-			$stage.dialog.dress.hide();
+
+		var data = {};
+
+	
+
+		if($("#dress-nickname").val() !== $data.nickname) data.nickname = $("#dress-nickname").val();
+		if($("#dress-exordial").val() !== $data.exordial) data.exordial = $("#dress-exordial").val();
+
+		if(data.nickname || !Object.is(data.exordial, undefined)){
+			if(data.nickname && $data.NICKNAME_LIMIT.REGEX.test(data.nickname)) data.nickname = confirm("닉네임 정책에 어긋나는 문자(열)이 포함되어 있습니다.\n닉네임 정책에 어긋나는 부분을 제거하고 변경할까요?") ? data.nickname.replace($data.NICKNAME_LIMIT.REGEX, "") : undefined;
+			if(data.nickname ? confirm($data.NICKNAME_LIMIT.TERM > 0 ? L.sureChangeNickLimit1 + $data.NICKNAME_LIMIT.TERM + L.sureChangeNickLimit2 : L.sureChangeNickNoLimit) : !Object.is(data.exordial, undefined)) $.post("/profile", data, function(res){
+				if(res.error) return fail(res.error);
+				if(data.nickname){
+					$data.users[$data.id].nickname = $data.nickname = data.nickname;
+					$("#account-info").text(data.nickname);
+				}
+				if(!Object.is(data.exordial, undefined)) $data.users[$data.id].exordial = $data.exordial = data.exordial;
+
+				send("bulkRefresh");
+				alert(data.nickname ? (!Object.is(data.exordial, undefined) ? L.nickChanged + $data.nickname + L.changed + " " + L.exorChanged + $data.exordial + L.changed : L.nickChanged + $data.nickname + L.changed) : L.exorChanged + $data.exordial + L.changed);
+			});
+		}
+		$stage.dialog.dressOK.attr("disabled", false);
+		$stage.dialog.dress.hide();
 		});
-	});
 	$("#DressDiag .dress-type").on('click', function(e){
 		var $target = $(e.currentTarget);
 		var type = $target.attr('id').slice(11);
@@ -988,6 +1031,7 @@ $(document).ready(function(){
 		};
 		ws.onerror = function(e){
 			console.warn(L['error'], e);
+			isWelcome = false;
 		};
 	}
 });

@@ -50,6 +50,7 @@ block CSS
 block Jungle
 	span#PUBLIC= PUBLIC ? "true" : undefined
 	span#URL= `${locals.PROTOCOL}://${locals.HOST}:${locals.PORT}/${locals._id}`
+	span#NICKNAME_LIMIT= locals.NICKNAME_LIMIT ? JSON.stringify(locals.NICKNAME_LIMIT) : "{}"
 	span#MOREMI_PART= locals.MOREMI_PART.join(',')
 	span#AVAIL_EQUIP= locals.AVAIL_EQUIP.join(',')
 	span#RULE= JSON.stringify(locals.RULE)
@@ -65,7 +66,7 @@ block Jungle
 	
 block Middle
 	- var VERSION = L('version') + " (모바일)";
-	- var nick = SESSION.profile ? (SESSION.profile.title || SESSION.profile.name) : null;
+	- var nick = SESSION.nickname;
 	div#Intro
 		img#intro(src='/img/kkutu/m_intro.png')
 		//- img#intro-start(src='/img/kkutu/intro_start.gif')
@@ -381,6 +382,15 @@ block Middle
 		input#Talk(maxlength=200)
 		button#ChatBtn= L('send')
 	div#ad
+	script (async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2822636577290715" crossorigin="anonymous")
+	ins class="adsbygoogle"{
+     style="display:block"
+     data-ad-client="ca-pub-2822636577290715"
+     data-ad-slot="4077168857"
+     data-ad-format="auto"
+     data-full-width-responsive="true"}
+
+	script (adsbygoogle = window.adsbygoogle || []).push({});
 
 block Bottom
 	div#facebook-menu

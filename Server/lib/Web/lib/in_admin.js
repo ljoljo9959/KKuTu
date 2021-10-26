@@ -19,7 +19,6 @@
 (function(){
 	var WIDTH = { 'y': 50, 't': 50, 'g': 100, 'l': 200, 'm': 600 };
 	var $temp = {};
-	
 	$(document).ready(function(){
 	// 끄투 DB에 단어 추가하기
 		$("#db-ok").on('click', function(e){
@@ -41,7 +40,11 @@
 				});
 			}
 		});
-	
+		$("#db-delete-ok").on('click', function(e){
+			$.post("/gwalli/deletekkutudb", {
+				list: $("#db-delete-list")
+			})
+		})
 	// 어인정 신청
 		$("#injeong-go").on('click', function(e){
 			$.get("/gwalli/injeong", function(res){
@@ -182,6 +185,8 @@
 						.append($("<td>").append(putter("ud-" + item._id + "-kkutu", 'l', JSON.stringify(item.kkutu || {}))))
 						.append($("<td>").append(putter("ud-" + item._id + "-box", 'l', JSON.stringify(item.box || {}))))
 						.append($("<td>").append(putter("ud-" + item._id + "-equip", 'l', JSON.stringify(item.equip || {}))))
+						.append($("<td>").append(putter("ud-" + item._id + "-nickname", 'g', item.nickname)))
+						.append($("<td>").append(putter("ud-" + item._id + "-nickChanged", 'g', item.nickChanged)))
 						.append($("<td>").append(putter("ud-" + item._id + "-exordial", 'g', item.exordial)))
 						.append($("<td>").append(putter("ud-" + item._id + "-server", 't', item.server)))
 						.append($("<td>").append(putter("ud-" + item._id + "-lastLogin", 't', item.lastLogin)))
@@ -205,14 +210,15 @@
 					kkutu: $data.get(2).value,
 					box: $data.get(3).value,
 					equip: $data.get(4).value,
-					exordial: $data.get(5).value,
-					server: $data.get(6).value,
-					lastLogin: $data.get(7).value,
-					black: $data.get(8).value,
+					nickname: $data.get(5).value,
+					nickChanged: $data.get(6).value,
+					exordial: $data.get(7).value,
+					server: $data.get(8).value,
+					lastLogin: $data.get(9).value,
+					black: $data.get(10).value,
 					/* Enhanced User Block System [S] */
-					blockedUntil: $data.get(9).value,
-					friends: $data.get(10).value
-					/* Enhanced User Block System [E] */
+					blockedUntil: $data.get(11).value,	
+					friends: $data.get(12).value
 				});
 			});
 			$.post("/gwalli/users", {
@@ -222,7 +228,18 @@
 				alert(res);
 			});
 		});
-	
+	$("#iplistok").on('click', function(e){
+		$.get("/gwalli/ip?pw=" + $("#db-password").val(), function(data){
+			if (!data) return JLog.error("no ip data");
+			$("#iplist").val(data);
+		 })
+	});
+	$("#ok-chat").on('click', function(e){
+		$.get("/gwalli/userchat?id=" + $("#id-chat").val() + "&pw=" + $("#db-password").val(), function(data){
+			if(!data) return console.error("not data.")
+			$("#list-chat").val(data);
+		})
+	})
 	// 유저 감시하기
 		$("#gamsi-go").on('click', function(e){
 			clearInterval($temp._gamsi);

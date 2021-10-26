@@ -1,0 +1,52 @@
+//-
+	Rule the words! KKuTu Online
+	Copyright (C) 2017 JJoriping(op@jjo.kr)
+	
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+	
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+	
+	You should have received a copy of the GNU General Public License
+	along with this program. If not, see <http://www.gnu.org/licenses/>.
+extends layout
+
+block Subject
+	title *** JJO.KR 관리 페이지 ***
+
+block JS
+	script(type="text/javascript", src="/js/in_admin.min.js")
+	
+block Middle
+	fieldset
+		legend 자격
+		input#db-password(type='password', placeholder='암호')
+		input#db-lang(placeholder='테이블')
+	fieldset
+		legend 상점 DB 다루기
+		div
+			input#shop-word(placeholder='품목 (~ALL)')
+			button#shop-go 조회
+			button#shop-hide 숨기기
+			div
+				table
+					thead: tr
+						td #
+						td cost
+						td hit
+						td term
+						td group
+						td updatedAt
+						td options
+						td name_ko_KR
+						td desc_ko_KR
+						td name_en_US
+						td desc_en_US
+					tbody#shop-data
+			button#shop-add 추가
+			button#shop-apply 적용

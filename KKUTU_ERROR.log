@@ -1,2 +1,187 @@
 This is an error log file of the game server.
 You may use like `tail -f KKUTU_ERROR.log` to watch this.
+:9304 [2021-9-17 6:37:52 ├F10: PM┤] ERROR: TypeError: GLOBAL.ADMIN.indexOf is not a function
+TypeError: GLOBAL.ADMIN.indexOf is not a function
+    at C:\Users\gsgg\Desktop\KKuTu\Server\lib\Game\slave.js:134:27
+    at callback (C:\Users\gsgg\Desktop\KKuTu\Server\lib\sub\collection.js:316:13)
+    at Result.preCB (C:\Users\gsgg\Desktop\KKuTu\Server\lib\sub\collection.js:298:6)
+    at Result.Query.handleReadyForQuery (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\query.js:144:10)
+    at Connection.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\client.js:180:19)
+    at Connection.emit (events.js:314:20)
+    at Socket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\connection.js:133:12)
+    at Socket.emit (events.js:314:20)
+    at addChunk (_stream_readable.js:297:12)
+    at readableAddChunk (_stream_readable.js:272:9):9304 [2021-9-17 6:38:18 ├F10: PM┤] ERROR: TypeError: Cannot read property 'findOne' of undefined
+TypeError: Cannot read property 'findOne' of undefined
+    at WebSocketServer.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\Game\slave.js:132:17)
+    at WebSocketServer.emit (events.js:314:20)
+    at C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\ws\lib\WebSocketServer.js:88:16
+    at WebSocketServer.completeUpgrade (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\ws\lib\WebSocketServer.js:270:5)
+    at WebSocketServer.handleUpgrade (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\ws\lib\WebSocketServer.js:197:10)
+    at Server.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\ws\lib\WebSocketServer.js:87:14)
+    at Server.emit (events.js:314:20)
+    at onParserExecuteCommon (_http_server.js:641:14)
+    at onParserExecute (_http_server.js:575:3):9304 [2021-9-17 6:38:26 ├F10: PM┤] ERROR: TypeError: GLOBAL.ADMIN.indexOf is not a function
+TypeError: GLOBAL.ADMIN.indexOf is not a function
+    at C:\Users\gsgg\Desktop\KKuTu\Server\lib\Game\slave.js:134:27
+    at callback (C:\Users\gsgg\Desktop\KKuTu\Server\lib\sub\collection.js:316:13)
+    at Result.preCB (C:\Users\gsgg\Desktop\KKuTu\Server\lib\sub\collection.js:298:6)
+    at Result.Query.handleReadyForQuery (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\query.js:144:10)
+    at Connection.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\client.js:180:19)
+    at Connection.emit (events.js:314:20)
+    at Socket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\connection.js:133:12)
+    at Socket.emit (events.js:314:20)
+    at addChunk (_stream_readable.js:297:12)
+    at readableAddChunk (_stream_readable.js:272:9):9304 [2021-9-17 6:38:41 ├F10: PM┤] ERROR: TypeError: GLOBAL.ADMIN.indexOf is not a function
+TypeError: GLOBAL.ADMIN.indexOf is not a function
+    at C:\Users\gsgg\Desktop\KKuTu\Server\lib\Game\slave.js:134:27
+    at callback (C:\Users\gsgg\Desktop\KKuTu\Server\lib\sub\collection.js:316:13)
+    at Result.preCB (C:\Users\gsgg\Desktop\KKuTu\Server\lib\sub\collection.js:298:6)
+    at Result.Query.handleReadyForQuery (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\query.js:144:10)
+    at Connection.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\client.js:180:19)
+    at Connection.emit (events.js:314:20)
+    at Socket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\connection.js:133:12)
+    at Socket.emit (events.js:314:20)
+    at addChunk (_stream_readable.js:297:12)
+    at readableAddChunk (_stream_readable.js:272:9):9304 [2021-9-17 6:51:38 ├F10: PM┤] ERROR: TypeError: GLOBAL.ADMIN.indexOf is not a function
+TypeError: GLOBAL.ADMIN.indexOf is not a function
+    at C:\Users\gsgg\Desktop\KKuTu\Server\lib\Game\slave.js:134:27
+    at callback (C:\Users\gsgg\Desktop\KKuTu\Server\lib\sub\collection.js:316:13)
+    at Result.preCB (C:\Users\gsgg\Desktop\KKuTu\Server\lib\sub\collection.js:298:6)
+    at Result.Query.handleReadyForQuery (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\query.js:144:10)
+    at Connection.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\client.js:180:19)
+    at Connection.emit (events.js:314:20)
+    at Socket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\connection.js:133:12)
+    at Socket.emit (events.js:314:20)
+    at addChunk (_stream_readable.js:297:12)
+    at readableAddChunk (_stream_readable.js:272:9):9304 [2021-9-17 6:51:59 ├F10: PM┤] ERROR: TypeError: Cannot read property 'findOne' of undefined
+TypeError: Cannot read property 'findOne' of undefined
+    at WebSocketServer.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\Game\slave.js:132:17)
+    at WebSocketServer.emit (events.js:314:20)
+    at C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\ws\lib\WebSocketServer.js:88:16
+    at WebSocketServer.completeUpgrade (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\ws\lib\WebSocketServer.js:270:5)
+    at WebSocketServer.handleUpgrade (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\ws\lib\WebSocketServer.js:197:10)
+    at Server.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\ws\lib\WebSocketServer.js:87:14)
+    at Server.emit (events.js:314:20)
+    at onParserExecuteCommon (_http_server.js:641:14)
+    at onParserExecute (_http_server.js:575:3):9304 [2021-9-17 6:52:15 ├F10: PM┤] ERROR: TypeError: GLOBAL.ADMIN.indexOf is not a function
+TypeError: GLOBAL.ADMIN.indexOf is not a function
+    at C:\Users\gsgg\Desktop\KKuTu\Server\lib\Game\slave.js:134:27
+    at callback (C:\Users\gsgg\Desktop\KKuTu\Server\lib\sub\collection.js:316:13)
+    at Result.preCB (C:\Users\gsgg\Desktop\KKuTu\Server\lib\sub\collection.js:298:6)
+    at Result.Query.handleReadyForQuery (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\query.js:144:10)
+    at Connection.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\client.js:180:19)
+    at Connection.emit (events.js:314:20)
+    at Socket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\connection.js:133:12)
+    at Socket.emit (events.js:314:20)
+    at addChunk (_stream_readable.js:297:12)
+    at readableAddChunk (_stream_readable.js:272:9):9304 [2021-9-17 6:52:20 ├F10: PM┤] ERROR: TypeError: GLOBAL.ADMIN.indexOf is not a function
+TypeError: GLOBAL.ADMIN.indexOf is not a function
+    at C:\Users\gsgg\Desktop\KKuTu\Server\lib\Game\slave.js:134:27
+    at callback (C:\Users\gsgg\Desktop\KKuTu\Server\lib\sub\collection.js:316:13)
+    at Result.preCB (C:\Users\gsgg\Desktop\KKuTu\Server\lib\sub\collection.js:298:6)
+    at Result.Query.handleReadyForQuery (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\query.js:144:10)
+    at Connection.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\client.js:180:19)
+    at Connection.emit (events.js:314:20)
+    at Socket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\connection.js:133:12)
+    at Socket.emit (events.js:314:20)
+    at addChunk (_stream_readable.js:297:12)
+    at readableAddChunk (_stream_readable.js:272:9):9304 [2021-9-17 6:52:45 ├F10: PM┤] ERROR: TypeError: GLOBAL.ADMIN.indexOf is not a function
+TypeError: GLOBAL.ADMIN.indexOf is not a function
+    at C:\Users\gsgg\Desktop\KKuTu\Server\lib\Game\slave.js:134:27
+    at callback (C:\Users\gsgg\Desktop\KKuTu\Server\lib\sub\collection.js:316:13)
+    at Result.preCB (C:\Users\gsgg\Desktop\KKuTu\Server\lib\sub\collection.js:298:6)
+    at Result.Query.handleReadyForQuery (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\query.js:144:10)
+    at Connection.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\client.js:180:19)
+    at Connection.emit (events.js:314:20)
+    at Socket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\connection.js:133:12)
+    at Socket.emit (events.js:314:20)
+    at addChunk (_stream_readable.js:297:12)
+    at readableAddChunk (_stream_readable.js:272:9):9304 [2021-9-17 6:53:01 ├F10: PM┤] ERROR: TypeError: Cannot read property 'findOne' of undefined
+TypeError: Cannot read property 'findOne' of undefined
+    at WebSocketServer.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\Game\slave.js:132:17)
+    at WebSocketServer.emit (events.js:314:20)
+    at C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\ws\lib\WebSocketServer.js:88:16
+    at WebSocketServer.completeUpgrade (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\ws\lib\WebSocketServer.js:270:5)
+    at WebSocketServer.handleUpgrade (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\ws\lib\WebSocketServer.js:197:10)
+    at Server.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\ws\lib\WebSocketServer.js:87:14)
+    at Server.emit (events.js:314:20)
+    at onParserExecuteCommon (_http_server.js:641:14)
+    at onParserExecute (_http_server.js:575:3):9304 [2021-9-17 6:53:03 ├F10: PM┤] ERROR: TypeError: GLOBAL.ADMIN.indexOf is not a function
+TypeError: GLOBAL.ADMIN.indexOf is not a function
+    at C:\Users\gsgg\Desktop\KKuTu\Server\lib\Game\slave.js:134:27
+    at callback (C:\Users\gsgg\Desktop\KKuTu\Server\lib\sub\collection.js:316:13)
+    at Result.preCB (C:\Users\gsgg\Desktop\KKuTu\Server\lib\sub\collection.js:298:6)
+    at Result.Query.handleReadyForQuery (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\query.js:144:10)
+    at Connection.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\client.js:180:19)
+    at Connection.emit (events.js:314:20)
+    at Socket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu\Server\lib\node_modules\pg\lib\connection.js:133:12)
+    at Socket.emit (events.js:314:20)
+    at addChunk (_stream_readable.js:297:12)
+    at readableAddChunk (_stream_readable.js:272:9):9304 [2021-9-19 7:48:21 ├F10: PM┤] ERROR: ReferenceError: s is not defined
+ReferenceError: s is not defined
+    at exports.Client.my.chat (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\Game\kkutu.js:387:66)
+    at Object.KKuTu.onClientMessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\Game\slave.js:238:9)
+    at WebSocket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\Game\kkutu.js:298:11)
+    at WebSocket.emit (events.js:314:20)
+    at Receiver._receiver.onmessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:143:47)
+    at Receiver.dataMessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:389:14)
+    at Receiver.getData (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:330:12)
+    at Receiver.startLoop (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:165:16)
+    at Receiver.add (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:139:10)
+    at Socket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:139:22):9304 [2021-9-19 7:48:23 ├F10: PM┤] ERROR: SyntaxError: Unexpected token � in JSON at position 0
+SyntaxError: Unexpected token � in JSON at position 0
+    at JSON.parse (<anonymous>)
+    at WebSocket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\Game\kkutu.js:294:11)
+    at WebSocket.emit (events.js:314:20)
+    at Receiver._receiver.onmessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:143:47)
+    at Receiver.dataMessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:389:14)
+    at Receiver.getData (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:330:12)
+    at Receiver.startLoop (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:165:16)
+    at Receiver.add (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:139:10)
+    at Socket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:139:22)
+    at Socket.emit (events.js:314:20):9304 [2021-9-19 7:48:25 ├F10: PM┤] ERROR: SyntaxError: Unexpected token  in JSON at position 0
+SyntaxError: Unexpected token  in JSON at position 0
+    at JSON.parse (<anonymous>)
+    at WebSocket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\Game\kkutu.js:294:11)
+    at WebSocket.emit (events.js:314:20)
+    at Receiver._receiver.onmessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:143:47)
+    at Receiver.dataMessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:389:14)
+    at Receiver.getData (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:330:12)
+    at Receiver.startLoop (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:165:16)
+    at Receiver.add (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:139:10)
+    at Socket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:139:22)
+    at Socket.emit (events.js:314:20):9304 [2021-9-19 7:48:28 ├F10: PM┤] ERROR: SyntaxError: Unexpected token  in JSON at position 0
+SyntaxError: Unexpected token  in JSON at position 0
+    at JSON.parse (<anonymous>)
+    at WebSocket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\Game\kkutu.js:294:11)
+    at WebSocket.emit (events.js:314:20)
+    at Receiver._receiver.onmessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:143:47)
+    at Receiver.dataMessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:389:14)
+    at Receiver.getData (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:330:12)
+    at Receiver.startLoop (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:165:16)
+    at Receiver.add (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:139:10)
+    at Socket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:139:22)
+    at Socket.emit (events.js:314:20):9304 [2021-9-19 7:48:30 ├F10: PM┤] ERROR: SyntaxError: Unexpected token  in JSON at position 0
+SyntaxError: Unexpected token  in JSON at position 0
+    at JSON.parse (<anonymous>)
+    at WebSocket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\Game\kkutu.js:294:11)
+    at WebSocket.emit (events.js:314:20)
+    at Receiver._receiver.onmessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:143:47)
+    at Receiver.dataMessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:389:14)
+    at Receiver.getData (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:330:12)
+    at Receiver.startLoop (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:165:16)
+    at Receiver.add (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:139:10)
+    at Socket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:139:22)
+    at Socket.emit (events.js:314:20):9304 [2021-9-19 7:48:31 ├F10: PM┤] ERROR: SyntaxError: Unexpected token � in JSON at position 0
+SyntaxError: Unexpected token � in JSON at position 0
+    at JSON.parse (<anonymous>)
+    at WebSocket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\Game\kkutu.js:294:11)
+    at WebSocket.emit (events.js:314:20)
+    at Receiver._receiver.onmessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:143:47)
+    at Receiver.dataMessage (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:389:14)
+    at Receiver.getData (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:330:12)
+    at Receiver.startLoop (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:165:16)
+    at Receiver.add (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\Receiver.js:139:10)
+    at Socket.<anonymous> (C:\Users\gsgg\Desktop\KKuTu-master\Server\lib\node_modules\ws\lib\WebSocket.js:139:22)
+    at Socket.emit (events.js:314:20)
