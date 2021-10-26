@@ -675,7 +675,7 @@ exports.Client = function(socket, profile, sid){
 		
 		if(!$room) return;
 		if($room.master != my.id) return;
-		if($room.players.length < 2) return my.sendError(411);
+		//if($room.players.length < 2) return my.sendError(411);
 		
 		$room.ready();
 	};
@@ -1036,7 +1036,7 @@ exports.Room = function(room, channel){
 						avTeam.push(i);
 					}
 				}
-				if(l < 2) return 418;
+				if(l < 1) return 418;
 				my._avTeam = shuffle(avTeam);
 			}
 		}
@@ -1075,7 +1075,7 @@ exports.Room = function(room, channel){
 			}
 		}
 		if(!DIC[my.master]) return;
-		if(len < 2) return DIC[my.master].sendError(411);
+		if(len < 1) return DIC[my.master].sendError(411);
 		if(i = my.preReady(teams)) return DIC[my.master].sendError(i);
 		if(all){
 			my._teams = teams;
@@ -1381,7 +1381,7 @@ function getGuestName(sid){
 	for(i=0; i<len; i++){
 		res += sid.charCodeAt(i) * (i+1);
 	}
-	return "GUEST" + (1000 + (res % 9000));
+	return "손님" + (100 + (res % 900));
 }
 function shuffle(arr){
 	var i, r = [];
@@ -1448,7 +1448,7 @@ function getRewards(mode, score, bonus, rank, all, ss){
 		* 1.25 / (1 + 1.25 * sr * sr) // 점차비(양학했을 수록 ↓)
 	;
 	rw.money = 1 + rw.score * 0.01;
-	if(all < 2){
+	if(all < 1){
 		rw.score = rw.score * 0.05;
 		rw.money = rw.money * 0.05;
 	}else{
